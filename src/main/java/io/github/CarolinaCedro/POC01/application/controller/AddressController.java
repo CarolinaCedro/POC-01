@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/address")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class AddressController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAddress(@RequestBody AddressSaveRequest request ){
+    public ResponseEntity<?> createAddress(@RequestBody @Valid AddressSaveRequest request ){
         addressService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

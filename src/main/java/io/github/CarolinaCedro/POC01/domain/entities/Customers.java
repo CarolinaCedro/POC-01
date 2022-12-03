@@ -1,5 +1,7 @@
 package io.github.CarolinaCedro.POC01.domain.entities;
 
+import io.github.CarolinaCedro.POC01.domain.enums.CpfOrCnpj;
+import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
