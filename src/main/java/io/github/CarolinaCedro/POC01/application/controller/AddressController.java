@@ -17,24 +17,24 @@ public class AddressController {
     private final AddressService addressService;
 
     @GetMapping
-    public ResponseEntity<?>getAll(){
+    public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(addressService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?>getById(@PathVariable Long id){
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         return ResponseEntity.ok(addressService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> createAddress(@RequestBody @Valid AddressSaveRequest request ){
+    public ResponseEntity<?> createAddress(@RequestBody @Valid AddressSaveRequest request) {
         addressService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?>deleteAddress(@PathVariable Long id){
+    public ResponseEntity<?> deleteAddress(@PathVariable Long id) {
         addressService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

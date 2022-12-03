@@ -1,7 +1,6 @@
 package io.github.CarolinaCedro.POC01.application.dto;
 
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
