@@ -1,6 +1,6 @@
 package io.github.CarolinaCedro.POC01.application.controller;
 
-import io.github.CarolinaCedro.POC01.application.dto.AddressSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,11 +1,14 @@
-package io.github.CarolinaCedro.POC01.application.dto;
+package io.github.CarolinaCedro.POC01.application.dto.request;
 
-import io.github.CarolinaCedro.POC01.domain.entities.Address;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AddressSaveRequest {
 
     @NotEmpty(message = "{campo.street.obrigatorio}")
@@ -21,7 +24,7 @@ public class AddressSaveRequest {
     @NotEmpty(message = "{campo.state.obrigatorio}")
     private String state;
 
-    public Address toModel(){
-        return new Address(street, number, neighborhood, city,zipCode,state );
-    }
+    @NotEmpty(message = "{campo.isPrincipalAddress.obrigatorio}")
+    private boolean isPrincipalAddress;
+
 }

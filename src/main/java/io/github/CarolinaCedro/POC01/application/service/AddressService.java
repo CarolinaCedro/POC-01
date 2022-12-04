@@ -1,7 +1,7 @@
 package io.github.CarolinaCedro.POC01.application.service;
 
-import io.github.CarolinaCedro.POC01.application.dto.AddressSaveRequest;
-import io.github.CarolinaCedro.POC01.application.dto.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
