@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 
 @Data
 @AllArgsConstructor
@@ -24,7 +27,7 @@ public class AddressSaveRequest {
     @NotEmpty(message = "{campo.state.obrigatorio}")
     private String state;
 
-    @NotEmpty(message = "{campo.isPrincipalAddress.obrigatorio}")
-    private boolean isPrincipalAddress;
+    @NotNull(message = "{campo.isPrincipalAddress.obrigatorio}")
+    private Boolean isPrincipalAddress;
 
 }

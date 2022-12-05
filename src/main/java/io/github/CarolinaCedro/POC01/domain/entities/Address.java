@@ -1,13 +1,13 @@
 package io.github.CarolinaCedro.POC01.domain.entities;
 
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table
@@ -38,13 +38,11 @@ public class Address {
     @NotNull(message = "{campo.state.obrigatorio}")
     private String state;
 
-    @Column(nullable = false)
-    @NotNull(message = "{campo.addressPrincipal.obrigatorio}")
-    private boolean isPrincipalAddress;
+    @NotNull(message = "{campo.isPrincipalAddress.obrigatorio}")
+    private Boolean isPrincipalAddress;
 
 
-
-    public Address(String street, String number, String neighborhood, String city, String zipCode, String state, boolean isPrincipalAddress) {
+    public Address(String street, String number, String neighborhood, String city, String zipCode, String state, Boolean isPrincipalAddress) {
         this.street = street;
         this.number = number;
         this.neighborhood = neighborhood;

@@ -7,11 +7,11 @@ import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +39,7 @@ public class CustomerService {
         Long idPrincipal = null;
         for (Address ids : addressList
         ) {
-            if (ids.isPrincipalAddress()) {
+            if (ids.getIsPrincipalAddress()) {
 
                 idPrincipal = ids.getId();
             }
@@ -48,7 +48,7 @@ public class CustomerService {
         Optional<Address> principalAddress = addressRepository.findById(idPrincipal);
 
         if (addressList.size() > 5) {
-            throw new RuntimeException("Tamanho excedido");
+            throw new RuntimeException("Tamanho Permitido excedido");
         } else {
 
             Customer customer = new Customer(request.getEmail(), addressList, request.getPhone(),
@@ -72,7 +72,7 @@ public class CustomerService {
             db.zera();
             db.setAddressPrincipal(addressUpdate.get());
             Address address = addressUpdate.get();
-            address.setPrincipalAddress(true);
+            address.setIsPrincipalAddress(true);
             customerRepository.save(db);
             return db;
         }

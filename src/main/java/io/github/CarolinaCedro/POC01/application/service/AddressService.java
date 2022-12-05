@@ -5,10 +5,12 @@ import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveRespons
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +31,7 @@ public class AddressService {
         return addressRepository.findById(id).map(this::dto);
     }
 
-    @Transactional
+
     public Address save(AddressSaveRequest request) {
         return addressRepository.save(modelMapper.convert().map(request,Address.class));
     }

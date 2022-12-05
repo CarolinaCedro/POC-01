@@ -2,12 +2,12 @@ package io.github.CarolinaCedro.POC01.domain.entities;
 
 import io.github.CarolinaCedro.POC01.domain.enums.CpfOrCnpj;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
-import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ public class Customer {
     public void zera() {
         for (Address response : address
         ) {
-            response.setPrincipalAddress(false);
+            response.setIsPrincipalAddress(false);
         }
     }
 

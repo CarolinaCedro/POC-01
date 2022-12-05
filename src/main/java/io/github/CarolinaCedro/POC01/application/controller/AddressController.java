@@ -5,6 +5,7 @@ import io.github.CarolinaCedro.POC01.application.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,7 +28,7 @@ public class AddressController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createAddress(@RequestBody @Valid AddressSaveRequest request) {
+    public ResponseEntity<?> createAddress(@Valid @RequestBody AddressSaveRequest request) {
         addressService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
