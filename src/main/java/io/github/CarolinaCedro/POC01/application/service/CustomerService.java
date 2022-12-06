@@ -1,6 +1,5 @@
 package io.github.CarolinaCedro.POC01.application.service;
 
-import io.github.CarolinaCedro.POC01.application.dto.request.CustomerAddressPrincipalUpdate;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.config.errors.FullmailingListException;
@@ -10,7 +9,6 @@ import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -29,9 +27,8 @@ public class CustomerService {
     private final ModelMapperConfig mapper;
 
 
-    public List<Customer> findAll() {
-        return customerRepository.findAll();
-//        return customerRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
+    public List<CustomerSaveResponse> findAll() {
+        return customerRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
     }
 
     public Optional<CustomerSaveResponse> findById(Long id) {
@@ -72,6 +69,8 @@ public class CustomerService {
         Optional<Customer> optional = customerRepository.findById(id);
         Optional<Address> addressUpdate = addressRepository.findById(update.getAddressPrincipal().getId());
 
+        //colocar em if
+
         if (optional.isPresent()) {
             Customer db = optional.get();
             db.zera();
@@ -97,6 +96,5 @@ public class CustomerService {
     public CustomerSaveResponse dto(Customer customer) {
         return mapper.convert().map(customer, CustomerSaveResponse.class);
     }
-
 
 }

@@ -1,5 +1,6 @@
 package io.github.CarolinaCedro.POC01.application.dto.response;
 
+import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -10,10 +11,10 @@ public class CustomerSaveResponse {
 
     private Long id;
     private String email;
-    private List<Long> address = new ArrayList<>();
+    private Address addressPrincipal;
+    private List<AddressConversorResponse> address = new ArrayList<>();
     private String phone;
     private String cpfOrCnpj;
     private String pjOrPf;
-
 
 }

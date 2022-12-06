@@ -1,5 +1,8 @@
 package io.github.CarolinaCedro.POC01.application.dto.request;
 
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressConversorResponse;
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,5 +38,7 @@ public class CustomerSaveRequest {
 
     @NotEmpty(message = "{campo.pjOrPf.obrigatorio}")
     private String pjOrPf;
+
+    private AddressSaveRequest addressPrincipal;
 
 }
