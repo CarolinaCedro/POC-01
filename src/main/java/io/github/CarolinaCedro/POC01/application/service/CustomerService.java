@@ -1,6 +1,7 @@
 package io.github.CarolinaCedro.POC01.application.service;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.config.errors.FullmailingListException;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
@@ -36,7 +37,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer create(CustomerSaveRequest request) {
+    public void create(CustomerSaveRequest request) {
         List<Address> addressList = addressRepository.findAllById(request.getAddress());
         Long idPrincipal = null;
         for (Address ids : addressList
@@ -47,54 +48,62 @@ public class CustomerService {
             }
         }
 
-        Optional<Address> principalAddress = addressRepository.findById(idPrincipal);
+        if (idPrincipal != null) {
+            Optional<Address> principalAddress = addressRepository.findById(idPrincipal);
+            if (addressList.size() > 5) {
+                throw new FullmailingListException("Atenção:Tamanho permitido para a lista de endereços foi excedido.");
+            } else {
 
-        if (addressList.size() > 5) {
-            throw new FullmailingListException("Atenção:Tamanho permitido para a lista de endereços foi excedido.");
-        } else {
+                Customer customer = new Customer(request.getEmail(), addressList, request.getPhone(),
+                        request.getCpfOrCnpj(), request.getPjOrPf(), principalAddress.get()
+                );
 
-            Customer customer = new Customer(request.getEmail(), addressList, request.getPhone(),
-                    request.getCpfOrCnpj(), request.getPjOrPf(), principalAddress.get()
-            );
-
-            return customerRepository.save(customer);
+                customerRepository.save(customer);
+            }
         }
-
 
     }
 
     @Transactional
-    public Customer changePrincipalAddress(Long id, Customer update) {
+    public Customer changePrincipalAddress(Long id, CustomerSaveRequest update) {
         Assert.notNull(id, "Não foi possivel atualizar o registro");
         Optional<Customer> optional = customerRepository.findById(id);
         Optional<Address> addressUpdate = addressRepository.findById(update.getAddressPrincipal().getId());
 
-        //colocar em if
-
         if (optional.isPresent()) {
             Customer db = optional.get();
             db.zera();
-            db.setAddressPrincipal(addressUpdate.get());
-            Address address = addressUpdate.get();
-            address.setIsPrincipalAddress(true);
-            customerRepository.save(db);
+            if (addressUpdate.isPresent()){
+                db.setAddressPrincipal(addressUpdate.get());
+                Address address = addressUpdate.get();
+                address.setIsPrincipalAddress(true);
+                customerRepository.save(db);
+            }
+
             return db;
         }
         return null;
     }
 
-    public Optional<Address> getPrincipalAddress(Long id) {
+    public Optional<AddressSaveResponse> getPrincipalAddress(Long id) {
         Optional<Customer> customer = customerRepository.findById(id);
-        Long address = customer.get().getAddressPrincipal().getId();
-        return addressRepository.findById(address);
+        if (customer.isPresent()){
+            Long address = customer.get().getAddressPrincipal().getId();
+            return addressRepository.findById(address).map(this::addressDtoConverter);
+        }
+        return Optional.empty();
     }
 
-    public List<Customer> findCustomarByEmail(String email) {
-        return customerRepository.findByEmail("%" + email + "%");
+    public List<CustomerSaveResponse> findCustomarByEmail(String email) {
+        return customerRepository.findByEmail("%" + email + "%").stream().map(this::dto).collect(Collectors.toList());
     }
 
     public CustomerSaveResponse dto(Customer customer) {
         return mapper.convert().map(customer, CustomerSaveResponse.class);
+    }
+
+    public AddressSaveResponse addressDtoConverter(Address address) {
+        return mapper.convert().map(address, AddressSaveResponse.class);
     }
 
 }

@@ -19,6 +19,8 @@ import java.util.List;
 @NoArgsConstructor
 public class CustomerSaveRequest {
 
+    private Long id;
+
     @NotEmpty(message = "{campo.email.obrigatorio}")
     @Email
     @Size(min = 5,max = 30,message = "{campo.email.size}")
@@ -41,4 +43,12 @@ public class CustomerSaveRequest {
 
     private AddressSaveRequest addressPrincipal;
 
+    public CustomerSaveRequest(String email, List<Long> address, String phone, String cpfOrCnpj, String pjOrPf, AddressSaveRequest addressPrincipal) {
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.cpfOrCnpj = cpfOrCnpj;
+        this.pjOrPf = pjOrPf;
+        this.addressPrincipal = addressPrincipal;
+    }
 }

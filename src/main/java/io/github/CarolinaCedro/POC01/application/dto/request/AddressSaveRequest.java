@@ -15,6 +15,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class AddressSaveRequest {
 
+    private Long id;
+
     @NotEmpty(message = "{campo.street.obrigatorio}")
     @Size(min = 6, max = 50, message = "{campo.street.size}")
     private String street;
@@ -37,4 +39,7 @@ public class AddressSaveRequest {
     @NotNull(message = "{campo.isPrincipalAddress.obrigatorio}")
     private Boolean isPrincipalAddress;
 
+    public AddressSaveRequest(Long id) {
+        this.id = id;
+    }
 }

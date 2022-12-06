@@ -32,15 +32,14 @@ public class AddressConversorResponse {
 
     public AddressConversorResponse(List<Long> address) {
 
-        List<Long> listDeIds = new ArrayList<>();
+        List<Long> listOfIds = new ArrayList<>();
 
         for (Long response : address
         ) {
-            Long id = response;
-            listDeIds.add(id);
+            listOfIds.add(response);
         }
 
-        List<Address> addressList = addressRepository.findAllById(listDeIds);
+        List<Address> addressList = addressRepository.findAllById(listOfIds);
         for (Address res : addressList
         ) {
             this.id = res.getId();

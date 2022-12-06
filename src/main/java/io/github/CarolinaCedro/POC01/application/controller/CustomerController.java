@@ -44,7 +44,7 @@ public class CustomerController {
     }
 
     @PatchMapping("/updateAddressPrincipal/{id}")
-    public ResponseEntity<?> setAddressPrincipal(@PathVariable Long id, @RequestBody Customer update) {
+    public ResponseEntity<?> setAddressPrincipal(@PathVariable Long id, @RequestBody CustomerSaveRequest update) {
         update.setId(id);
         return ResponseEntity.ok(customerService.changePrincipalAddress(id, update));
     }
