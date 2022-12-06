@@ -7,6 +7,7 @@ import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

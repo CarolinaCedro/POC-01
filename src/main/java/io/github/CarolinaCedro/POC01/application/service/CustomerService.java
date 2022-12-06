@@ -1,19 +1,23 @@
 package io.github.CarolinaCedro.POC01.application.service;
 
+import io.github.CarolinaCedro.POC01.application.dto.request.CustomerAddressPrincipalUpdate;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
+import io.github.CarolinaCedro.POC01.config.errors.FullmailingListException;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +25,9 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
-    private final AddressService addressService;
+
     private final ModelMapperConfig mapper;
+
 
     public List<Customer> findAll() {
         return customerRepository.findAll();
@@ -48,7 +53,7 @@ public class CustomerService {
         Optional<Address> principalAddress = addressRepository.findById(idPrincipal);
 
         if (addressList.size() > 5) {
-            throw new RuntimeException("Tamanho Permitido excedido");
+            throw new FullmailingListException("Atenção:Tamanho permitido para a lista de endereços foi excedido.");
         } else {
 
             Customer customer = new Customer(request.getEmail(), addressList, request.getPhone(),
