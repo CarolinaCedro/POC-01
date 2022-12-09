@@ -19,4 +19,6 @@ public class AddressSaveResponse {
     private String state;
     private boolean isPrincipalAddress;
 
+
+
 }

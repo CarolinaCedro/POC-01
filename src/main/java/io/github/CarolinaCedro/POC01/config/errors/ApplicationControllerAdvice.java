@@ -2,6 +2,8 @@ package io.github.CarolinaCedro.POC01.config.errors;
 
 
 import io.github.CarolinaCedro.POC01.application.exception.ApiErrors;
+import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
+import io.github.CarolinaCedro.POC01.application.exception.StandardError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,16 +12,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class ApplicationControllerAdvice {
 
     @Autowired
@@ -67,6 +70,11 @@ public class ApplicationControllerAdvice {
     }
 
 
-
+    @ExceptionHandler(ObjectNotFoundException.class)
+    public ResponseEntity<StandardError>objectNotFound(ObjectNotFoundException ex, HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 
 }

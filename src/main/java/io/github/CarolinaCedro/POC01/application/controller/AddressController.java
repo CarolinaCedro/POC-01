@@ -1,11 +1,10 @@
 package io.github.CarolinaCedro.POC01.application.controller;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
-import io.github.CarolinaCedro.POC01.application.service.AddressService;
+import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,11 +14,12 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AddressController {
 
+
     private final AddressService addressService;
 
     @GetMapping
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(addressService.findAll());
+        return ResponseEntity.ok(addressService.getAll());
     }
 
     @GetMapping("/{id}")

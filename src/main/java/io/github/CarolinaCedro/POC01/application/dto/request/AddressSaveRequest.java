@@ -1,9 +1,12 @@
 package io.github.CarolinaCedro.POC01.application.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.AssociationOverride;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,7 +16,9 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AddressSaveRequest {
+
 
     private Long id;
 
@@ -39,7 +44,20 @@ public class AddressSaveRequest {
     @NotNull(message = "{campo.isPrincipalAddress.obrigatorio}")
     private Boolean isPrincipalAddress;
 
+
+    public AddressSaveRequest(String street, String number, String neighborhood, String city, String zipCode, String state, Boolean isPrincipalAddress) {
+        this.street = street;
+        this.number = number;
+        this.neighborhood = neighborhood;
+        this.city = city;
+        this.zipCode = zipCode;
+        this.state = state;
+        this.isPrincipalAddress = isPrincipalAddress;
+    }
+
     public AddressSaveRequest(Long id) {
         this.id = id;
     }
+
+
 }

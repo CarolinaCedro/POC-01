@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class Poc01AddressApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void main(){
+		Poc01AddressApplication.main(new String[] {});
 	}
 
 }
