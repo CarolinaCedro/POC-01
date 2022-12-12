@@ -6,6 +6,7 @@ import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundExcepti
 import io.github.CarolinaCedro.POC01.application.exception.StandardError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,6 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ApplicationControllerAdvice {
 
-    @Autowired
-    private MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -34,7 +33,7 @@ public class ApplicationControllerAdvice {
         BindingResult bindingResult = ex.getBindingResult();
         List<String> messages = bindingResult.getAllErrors()
                 .stream()
-                .map(objectError -> objectError.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
         return new ApiErrors(messages);
     }
@@ -76,5 +75,6 @@ public class ApplicationControllerAdvice {
                 new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
 
 }

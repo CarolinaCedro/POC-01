@@ -1,24 +1,25 @@
-package io.github.CarolinaCedro.POC01.application.service.impl;
+package io.github.CarolinaCedro.POC01.application.service;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
+import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Builder(toBuilder = true)
-public class AddressServiceImpl implements AddressService{
+public class AddressServiceImpl implements AddressService {
 
 
     private final AddressRepository addressRepository;
@@ -48,6 +49,26 @@ public class AddressServiceImpl implements AddressService{
         return addressRepository.save(modelMapper.convert().map(request,Address.class));
     }
 
+    @Override
+    public Address update(AddressSaveRequest request) {
+        Optional<Address> optional = addressRepository.findById(request.getId());
+        if (optional.isPresent()) {
+            Address db = optional.get();
+            db.setStreet(request.getStreet());
+            db.setNumber(request.getNumber());
+            db.setNeighborhood(request.getNeighborhood());
+            db.setCity(request.getCity());
+            db.setZipCode(request.getZipCode());
+            db.setState(request.getState());
+            db.setIsPrincipalAddress(request.getIsPrincipalAddress());
+            addressRepository.save(db);
+            return db;
+        }
+        return null;
+    }
+
+
+
 
     @Transactional
     public void deleteById(Long id) {
@@ -57,6 +78,8 @@ public class AddressServiceImpl implements AddressService{
         }
 
     }
+
+
 
     public AddressSaveResponse dto(Address address) {
         return modelMapper.convert().map(address,AddressSaveResponse.class);
