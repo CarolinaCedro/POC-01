@@ -2,6 +2,7 @@ package io.github.CarolinaCedro.POC01.application.controller;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.AddressServiceImpl;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ class AddressControllerTest {
 
 
     public static final int INDEX = 0;
+    public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado.";
     @Autowired
     private AddressController controller;
 
@@ -108,6 +110,8 @@ class AddressControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
+
+
     @Test
     void whenUpdateThenReturnUpdateSucess() {
         when(service.update(addressSaveRequest)).thenReturn(address);
@@ -143,9 +147,10 @@ class AddressControllerTest {
         verify(service,times(1)).deleteById(anyLong());
     }
 
+
     private void startAddressControler() {
         address = new Address(ID, STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
-        addressSaveRequest = new AddressSaveRequest(STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
+        addressSaveRequest = new AddressSaveRequest(ID,STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
         addressSaveResponse = new AddressSaveResponse(ID, STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
     }
 }

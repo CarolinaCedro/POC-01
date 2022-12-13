@@ -49,11 +49,11 @@ public class CustomerController {
 
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<?>updateAddress(@PathVariable Long id,@RequestBody @Valid AddressSaveRequest request){
-//        request.setId(id);
-//        return ResponseEntity.ok(customerService.update(id,request));
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerSaveRequest>updateAddress(@PathVariable Long id,@RequestBody @Valid CustomerSaveRequest request){
+        request.setId(id);
+        return ResponseEntity.ok().body(mapper.map(customerServiceImpl.update(id, request),CustomerSaveRequest.class));
+    }
 
 
     @PatchMapping("/updateAddressPrincipal/{id}")

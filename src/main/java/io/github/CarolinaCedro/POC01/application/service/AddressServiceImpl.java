@@ -49,26 +49,15 @@ public class AddressServiceImpl implements AddressService {
         return addressRepository.save(modelMapper.convert().map(request,Address.class));
     }
 
+
+
     @Override
     public Address update(AddressSaveRequest request) {
-        Optional<Address> optional = addressRepository.findById(request.getId());
-        if (optional.isPresent()) {
-            Address db = optional.get();
-            db.setStreet(request.getStreet());
-            db.setNumber(request.getNumber());
-            db.setNeighborhood(request.getNeighborhood());
-            db.setCity(request.getCity());
-            db.setZipCode(request.getZipCode());
-            db.setState(request.getState());
-            db.setIsPrincipalAddress(request.getIsPrincipalAddress());
-            addressRepository.save(db);
-            return db;
+        if(request == null || request.getId() == null){
+            throw new ObjectNotFoundException("Objeto não encontrado");
         }
-        return null;
+        return this.addressRepository.save(modelMapper.convert().map(request,Address.class));
     }
-
-
-
 
     @Transactional
     public void deleteById(Long id) {
@@ -79,9 +68,4 @@ public class AddressServiceImpl implements AddressService {
 
     }
 
-
-
-    public AddressSaveResponse dto(Address address) {
-        return modelMapper.convert().map(address,AddressSaveResponse.class);
-    }
 }

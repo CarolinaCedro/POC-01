@@ -1,6 +1,8 @@
 package io.github.CarolinaCedro.POC01.application.service;
 
+import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressConversorResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
@@ -9,13 +11,16 @@ import io.github.CarolinaCedro.POC01.config.errors.FullmailingListException;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.domain.entities.Customer;
+import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
 
-    private final ModelMapperConfig mapper;
+    private final ModelMapper mapper;
 
     @Override
     public List<CustomerSaveResponse> findAll() {
@@ -67,22 +72,27 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.save(customer);
     }
 
-//    public CustomerSaveRequest update(Long id,CustomerSaveRequest request) {
-//        Assert.notNull(id, "Unable to update registration");
-//        Optional<Customer> optional = customerRepository.findById(id);
-//        if (optional.isPresent()) {
-//            Customer db = optional.get();
-//            db.setEmail(request.getEmail());
-//            db.setAddress(request.getAddress());
-//            db.setPhone(request.getPhone());
-//            db.setCpfOrCnpj(request.getCpfOrCnpj());
-//            db.setPjOrPf(request.getPjOrPf());
-//            db.setAddressPrincipal(request.getAddressPrincipal());
-//            customerRepository.save(db);
-//            return this.dtoRequest(db);
-//        }
-//        return null;
-//    }
+    @Override
+    public Customer update(Long id, CustomerSaveRequest customerSaveRequest) {
+        Assert.notNull(id, "Unable to update registration");
+        Optional<Customer> optional = customerRepository.findById(id);
+        List<Address> addressList = addressRepository.findAllById(customerSaveRequest.getAddress());
+        AddressSaveRequest addressPrincipal = customerSaveRequest.getAddressPrincipal();
+        Address addressUpdated =  mapper.map(addressPrincipal,Address.class);
+
+        if (optional.isPresent()) {
+            Customer db = optional.get();
+            db.setEmail(customerSaveRequest.getEmail());
+            db.setAddress(addressList);
+            db.setPhone(customerSaveRequest.getPhone());
+            db.setCpfOrCnpj(customerSaveRequest.getCpfOrCnpj());
+            db.setPjOrPf(PjOrPf.valueOf(customerSaveRequest.getPjOrPf()));
+            db.setAddressPrincipal(addressUpdated);
+            customerRepository.save(db);
+            return db;
+        }
+        return null;
+    }
 
     @Override
     @Transactional
@@ -125,7 +135,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteById(Long id) {
         Optional<Customer> customer = customerRepository.findById(id);
-        if (customer.isPresent()){
+        if (customer.isPresent()) {
             customerRepository.deleteById(id);
         }
 
@@ -133,12 +143,12 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     public CustomerSaveResponse dto(Customer customer) {
-        return mapper.convert().map(customer, CustomerSaveResponse.class);
+        return mapper.map(customer, CustomerSaveResponse.class);
     }
 
 
     public AddressSaveResponse addressDtoConverter(Address address) {
-        return mapper.convert().map(address, AddressSaveResponse.class);
+        return mapper.map(address, AddressSaveResponse.class);
     }
 
 

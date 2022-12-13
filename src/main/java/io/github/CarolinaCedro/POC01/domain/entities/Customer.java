@@ -1,9 +1,14 @@
 package io.github.CarolinaCedro.POC01.domain.entities;
 
+import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CnpjGroup;
+import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CpfGroup;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.br.CNPJ;
+import org.hibernate.validator.constraints.br.CPF;
+import org.hibernate.validator.group.GroupSequenceProvider;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
@@ -17,6 +22,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@GroupSequenceProvider(CustomerGroupSequenceProvider.class)
 public class Customer {
 
     @Id
@@ -54,6 +60,8 @@ public class Customer {
     @Column(nullable = false, length = 2)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "{campo.cnfOrCnpj.obrigatorio}")
+    @CPF(groups = CpfGroup.class)
+    @CNPJ(groups = CnpjGroup.class)
     private PjOrPf pjOrPf;
 
 

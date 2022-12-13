@@ -18,6 +18,7 @@ import org.springframework.ui.ModelMap;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -32,7 +33,7 @@ class AddressServiceImplTest {
     public static final String CITY = "Rio verde goiás";
     public static final String ZIP_CODE = "9870766";
     public static final String STATE = "Goiás";
-    public static final boolean IS_PRINCIPAL_ADDRESS = false;
+    public static final boolean IS_PRINCIPAL_ADDRESS = true;
 
     public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado";
 
@@ -56,6 +57,11 @@ class AddressServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         startAddress();
+        updateValidAddres();
+    }
+
+    private Address updateValidAddres() {
+        return Address.builder().id(ID).street(STREET).number(NUMBER).neighborhood(NEIGHBORHOOD).zipCode(ZIP_CODE).state(STATE).isPrincipalAddress(IS_PRINCIPAL_ADDRESS).build();
     }
 
 
@@ -81,6 +87,21 @@ class AddressServiceImplTest {
             assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());
         }
     }
+
+    @Test
+    void whenCreateReturnsObjectNotFoundException() {
+
+        when(repository.save(any())).thenThrow(
+                new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO)
+        );
+        try {
+            service.update(null);
+        } catch (Exception ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());
+        }
+    }
+
 
 
     @Test
@@ -117,23 +138,25 @@ class AddressServiceImplTest {
         assertEquals(IS_PRINCIPAL_ADDRESS,response.getIsPrincipalAddress());
     }
 
+    @Test
+    void whenUpdateThenReturnSucess() {
+
+        Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(address);
+        Address response = service.update(addressSaveRequest);
+        assertNotNull(response);
+        assertEquals(Address.class,response.getClass());
+        assertEquals(ID,response.getId());
+        assertEquals(STREET,response.getStreet());
+        assertEquals(NUMBER,response.getNumber());
+        assertEquals(NEIGHBORHOOD,response.getNeighborhood());
+        assertEquals(ZIP_CODE,response.getZipCode());
+        assertEquals(STATE,response.getState());
+        assertEquals(IS_PRINCIPAL_ADDRESS,response.getIsPrincipalAddress());
+    }
 
 
-//    @Test
-//    void whenUpdateThenReturnSucess() {
-//
-//        when(repository.save(ArgumentMatchers.any())).thenReturn(address);
-//        Address response = service.update(addressSaveRequest);
-//        assertNotNull(response);
-//        assertEquals(Address.class,response.getClass());
-//        assertEquals(ID,response.getId());
-//        assertEquals(STREET,response.getStreet());
-//        assertEquals(NUMBER,response.getNumber());
-//        assertEquals(NEIGHBORHOOD,response.getNeighborhood());
-//        assertEquals(ZIP_CODE,response.getZipCode());
-//        assertEquals(STATE,response.getState());
-//        assertEquals(IS_PRINCIPAL_ADDRESS,response.getIsPrincipalAddress());
-//    }
+
+
 
     @Test
     void deleteWithSucess(){
@@ -163,7 +186,7 @@ class AddressServiceImplTest {
     private void startAddress() {
         address = new Address(ID, STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
         optionalAddress = Optional.of(new Address(ID, STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS));
-        addressSaveRequest = new AddressSaveRequest(STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
+        addressSaveRequest = new AddressSaveRequest(ID,STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
         addressSaveResponse = new AddressSaveResponse(ID,STREET, NUMBER, NEIGHBORHOOD, CITY, ZIP_CODE, STATE, IS_PRINCIPAL_ADDRESS);
     }
 }

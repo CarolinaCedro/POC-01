@@ -19,5 +19,7 @@ public interface CustomerService {
     Optional<AddressSaveResponse>getPrincipalAddress(Long id);
     List<CustomerSaveResponse>findCustomarByEmail(String email);
 
+    Customer update(Long id,CustomerSaveRequest request);
+
     void deleteById(Long id);
 }
