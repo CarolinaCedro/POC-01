@@ -11,14 +11,12 @@ import lombok.NoArgsConstructor;
 public class AddressSaveResponse {
 
     private Long id;
-    private String street;
+    private String logradouro;
     private String number;
-    private String neighborhood;
-    private String city;
-    private String zipCode;
-    private String state;
+    private String bairro;
+    private String localidade;
+    private String cep;
+    private String uf;
     private boolean isPrincipalAddress;
-
-
 
 }

@@ -1,10 +1,14 @@
 package io.github.CarolinaCedro.POC01.application.service;
 
+import com.google.gson.Gson;
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
+import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +24,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +37,8 @@ public class AddressServiceImpl implements AddressService {
 
 
     @Override
-    public List<Address> getAll() {
-        List<Address> list = addressRepository.findAll();
-//        return addressRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
-        return list;
+    public List<AddressSaveResponse> getAll() {
+        return addressRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
     }
 
 
@@ -48,26 +51,34 @@ public class AddressServiceImpl implements AddressService {
 
 
     @Override
-    public Address save(AddressSaveRequest request) throws IOException {
+    public AddressSaveResponse save(AddressSaveRequest request) throws IOException {
         //Consumindo API publica externa
-//
-//        URL url = new URL("viacep.com.br/ws/" + request.getZipCode() + "/json/");
-//        URLConnection connection = url.openConnection();
-//        InputStream is = connection.getInputStream();
-//        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-//
-//        String zipCode = "";
-//        StringBuilder jsonZipCode = new StringBuilder();
-//
-//        while ((zipCode = br.readLine()) != null){
-//            jsonZipCode.append(zipCode);
-//        }
-//
-//        System.out.println(jsonZipCode.toString());
 
+        URL url = new URL("https://viacep.com.br/ws/" + request.getCep() + "/json/");
+        URLConnection connection = url.openConnection();
+        InputStream is = connection.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
+        String cep = "";
+        StringBuilder jsonCep = new StringBuilder();
 
-        return addressRepository.save(modelMapper.convert().map(request, Address.class));
+        while ((cep = br.readLine()) != null) {
+            jsonCep.append(cep);
+        }
+
+        AddressSaveRequest addressAux = new Gson().fromJson(jsonCep.toString(), AddressSaveRequest.class);
+
+        request.setLogradouro(request.getLogradouro());
+        request.setNumber(request.getNumber());
+        request.setBairro(request.getBairro());
+        request.setLocalidade(addressAux.getLocalidade());
+        request.setCep(request.getCep());
+        request.setUf(addressAux.getUf());
+        request.setIsPrincipalAddress(request.getIsPrincipalAddress());
+
+        addressRepository.save(modelMapper.convert().map(request, Address.class));
+
+        return modelMapper.convert().map(request, AddressSaveResponse.class);
     }
 
 
@@ -86,6 +97,11 @@ public class AddressServiceImpl implements AddressService {
             addressRepository.deleteById(id);
         }
 
+    }
+
+
+    public AddressSaveResponse dto(Address address) {
+        return modelMapper.convert().map(address, AddressSaveResponse.class);
     }
 
 }

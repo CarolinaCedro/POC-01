@@ -21,42 +21,40 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, length = 50)
-    @NotNull(message = "{campo.street.obrigatorio}")
-    @Size(min = 6, max = 50, message = "{campo.street.size}")
-    private String street;
+    @NotNull(message = "{campo.logradouro.obrigatorio}")
+    @Size(min = 6, max = 50, message = "{campo.logradouro.size}")
+    private String logradouro;
 
     @Column(nullable = false, length = 30)
     @NotNull(message = "{campo.number.obrigatorio}")
     @Size(min = 1, max = 10, message = "{campo.number.size}")
     private String number;
     @Column(nullable = false, length = 50)
-    @NotNull(message = "{campo.neighborhood.obrigatorio}")
-    @Size(min = 4, max = 50, message = "{campo.neighborhood.size}")
-    private String neighborhood;
+    @NotNull(message = "{campo.bairro.obrigatorio}")
+    @Size(min = 4, max = 50, message = "{campo.bairro.size}")
+    private String bairro;
     @Column(nullable = false, length = 50)
-    @NotNull(message = "{campo.city.obrigatorio}")
-    @Size(min = 4, max = 30, message = "{campo.city.size}")
-    private String city;
+    @Size(min = 4, max = 30, message = "{campo.localidade.size}")
+    private String localidade;
     @Column(nullable = false, length = 8)
-    @NotNull(message = "{campo.zipCode.obrigatorio}")
-    @Size(min = 8, max = 30, message = "{campo.zipCode.size}")
-    private String zipCode;
+    @NotNull(message = "{campo.cep.obrigatorio}")
+    @Size(min = 8, max = 8, message = "{campo.cep.size}")
+    private String cep;
     @Column(nullable = false, length = 30)
-    @NotNull(message = "{campo.state.obrigatorio}")
-    @Size(min = 3, max = 30, message = "{campo.state.size}")
-    private String state;
+    @Size(min = 2, max = 2, message = "{campo.uf.size}")
+    private String uf;
 
     @NotNull(message = "{campo.isPrincipalAddress.obrigatorio}")
     private Boolean isPrincipalAddress;
 
 
-    public Address(String street, String number, String neighborhood, String city, String zipCode, String state, Boolean isPrincipalAddress) {
-        this.street = street;
+    public Address(String logradouro, String number, String bairro, String localidade, String cep, String uf, Boolean isPrincipalAddress) {
+        this.logradouro = logradouro;
         this.number = number;
-        this.neighborhood = neighborhood;
-        this.city = city;
-        this.zipCode = zipCode;
-        this.state = state;
+        this.bairro = bairro;
+        this.localidade = localidade;
+        this.cep = cep;
+        this.uf = uf;
         this.isPrincipalAddress = isPrincipalAddress;
     }
 

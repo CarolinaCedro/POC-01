@@ -81,7 +81,7 @@ class AddressControllerTest {
 
     @Test
     void whenFindAllThenReturnAListOfAddresResponse() {
-        when(service.getAll()).thenReturn(List.of(address));
+        when(service.getAll()).thenReturn(List.of(addressSaveResponse));
         when(mapper.map(any(), any())).thenReturn(addressSaveResponse);
 
         ResponseEntity<List<AddressSaveResponse>> response = controller.getAll();
@@ -105,7 +105,7 @@ class AddressControllerTest {
 
     @Test
     void whendCreateThenReturnCreated() {
-        when(service.save(any())).thenReturn(address);
+        when(service.save(any())).thenReturn(addressSaveResponse);
         ResponseEntity<AddressSaveRequest> response = controller.createAddress(addressSaveRequest);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }

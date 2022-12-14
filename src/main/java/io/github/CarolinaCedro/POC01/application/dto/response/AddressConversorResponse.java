@@ -21,12 +21,12 @@ public class AddressConversorResponse {
     private AddressRepository addressRepository;
 
     private Long id;
-    private String street;
+    private String logradouro;
     private String number;
-    private String neighborhood;
-    private String city;
-    private String zipCode;
-    private String state;
+    private String bairro;
+    private String localidade;
+    private String cep;
+    private String uf;
     private boolean isPrincipalAddress;
 
 
@@ -43,12 +43,12 @@ public class AddressConversorResponse {
         for (Address res : addressList
         ) {
             this.id = res.getId();
-            this.street = res.getStreet();
+            this.logradouro = res.getLogradouro();
             this.number = res.getNumber();
-            this.neighborhood = res.getNeighborhood();
-            this.city = res.getCity();
-            this.zipCode = res.getZipCode();
-            this.state = res.getState();
+            this.bairro = res.getBairro();
+            this.localidade = res.getLocalidade();
+            this.cep = res.getCep();
+            this.uf = res.getUf();
             this.isPrincipalAddress = res.getIsPrincipalAddress();
         }
 
