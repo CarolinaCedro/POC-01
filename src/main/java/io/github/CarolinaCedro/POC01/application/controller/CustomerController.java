@@ -4,13 +4,14 @@ import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.service.CustomerServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

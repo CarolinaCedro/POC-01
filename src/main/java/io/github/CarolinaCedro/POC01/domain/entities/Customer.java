@@ -57,12 +57,14 @@ public class Customer {
 
     @Column(nullable = false)
     @NotNull(message = "{campo.cnfOrCnpj.obrigatorio}")
+    @Size(min = 11,max = 18,message = "{campo.cpfOrCnpj.size}")
     @CPF(groups = CpfGroup.class)
     @CNPJ(groups = CnpjGroup.class)
     private String cpfOrCnpj;
 
 
     @Column(nullable = false)
+    @NotNull(message = "{campo.PjOrPf.obrigatorio}")
     @Enumerated(EnumType.STRING)
     private PjOrPf pjOrPf;
 

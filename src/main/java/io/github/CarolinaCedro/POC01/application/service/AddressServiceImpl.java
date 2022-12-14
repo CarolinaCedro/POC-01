@@ -10,6 +10,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +31,6 @@ public class AddressServiceImpl implements AddressService {
     private final ModelMapperConfig modelMapper;
 
 
-
     @Override
     public List<Address> getAll() {
         List<Address> list = addressRepository.findAll();
@@ -35,30 +42,47 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address findById(Long id) {
         Optional<Address> address = addressRepository.findById(id);
-        return address.orElseThrow(()-> new ObjectNotFoundException("Objeto não encontrado"));
+        return address.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
 //        return addressRepository.findById(id).map(this::dto);
     }
 
 
     @Override
-    public Address save(AddressSaveRequest request) {
-        return addressRepository.save(modelMapper.convert().map(request,Address.class));
-    }
+    public Address save(AddressSaveRequest request) throws IOException {
+        //Consumindo API publica externa
+//
+//        URL url = new URL("viacep.com.br/ws/" + request.getZipCode() + "/json/");
+//        URLConnection connection = url.openConnection();
+//        InputStream is = connection.getInputStream();
+//        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+//
+//        String zipCode = "";
+//        StringBuilder jsonZipCode = new StringBuilder();
+//
+//        while ((zipCode = br.readLine()) != null){
+//            jsonZipCode.append(zipCode);
+//        }
+//
+//        System.out.println(jsonZipCode.toString());
 
+
+
+        return addressRepository.save(modelMapper.convert().map(request, Address.class));
+    }
 
 
     @Override
     public Address update(AddressSaveRequest request) {
-        if(request == null || request.getId() == null){
+        if (request == null || request.getId() == null) {
             throw new ObjectNotFoundException("Objeto não encontrado");
         }
-        return this.addressRepository.save(modelMapper.convert().map(request,Address.class));
+        return this.addressRepository.save(modelMapper.convert().map(request, Address.class));
     }
 
     @Transactional
     public void deleteById(Long id) {
         Optional<Address> address = addressRepository.findById(id);
-        if (address.isPresent()){
+        if (address.isPresent()) {
             addressRepository.deleteById(id);
         }
 

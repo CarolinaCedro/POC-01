@@ -5,8 +5,7 @@ import io.github.CarolinaCedro.POC01.application.exception.ApiErrors;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.exception.StandardError;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -14,9 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -24,13 +23,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ApplicationControllerAdvice {
+
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handleValidationErros(MethodArgumentNotValidException ex) {
+    public ApiErrors handleValidationErrorMethodArgumentNotValidadeException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         List<String> messages = bindingResult.getAllErrors()
                 .stream()
@@ -39,13 +39,20 @@ public class ApplicationControllerAdvice {
         return new ApiErrors(messages);
     }
 
-//    @ExceptionHandler(ResponseStatusException.class)
-//    public ResponseEntity handleResponseStatusException(ResponseStatusException ex) {
-//        String mensagemErro = ex.getReason();
-//        HttpStatus codigoStatus = ex.getStatus();
-//        ApiErrors apiErrors = new ApiErrors(mensagemErro);
-//        return new ResponseEntity(apiErrors, codigoStatus);
-//    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleValidationErrorConstraintViolationException(ConstraintViolationException ex) {
+        String mensagemError = ex.getLocalizedMessage();
+        return new ApiErrors(mensagemError);
+    }
+
+
+    @ExceptionHandler(ResponseStatusException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleResponseStatusException(ResponseStatusException ex){
+        String mensagemError = ex.getMessage();
+        return new ApiErrors(mensagemError);
+    }
 
 
     @ExceptionHandler(DataIntegrityViolationException.class)

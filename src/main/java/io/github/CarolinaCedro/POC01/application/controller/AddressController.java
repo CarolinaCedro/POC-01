@@ -4,6 +4,7 @@ import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class AddressController {
     }
 
     @PostMapping
-    public ResponseEntity<AddressSaveRequest> createAddress( @RequestBody @Valid AddressSaveRequest request) {
+    public ResponseEntity<AddressSaveRequest> createAddress( @RequestBody @Valid AddressSaveRequest request) throws IOException {
         addressService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

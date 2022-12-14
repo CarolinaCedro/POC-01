@@ -8,6 +8,7 @@ import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,7 +40,9 @@ public class CustomerSaveRequest {
     @Size(min = 6,max = 30,message = "{campo.phone.size}")
     private String phone;
 
-    @Size(min = 12,max = 20,message = "{campo.cpfOrCnpj.size}")
+
+    @NotEmpty(message = "{campo.cpfOrCnpj.obrigatorio}")
+    @Size(min = 11,max = 18,message = "{campo.cpfOrCnpj.size}")
     @CPF(groups = CpfGroup.class)
     @CNPJ(groups = CnpjGroup.class)
     private String cpfOrCnpj;
