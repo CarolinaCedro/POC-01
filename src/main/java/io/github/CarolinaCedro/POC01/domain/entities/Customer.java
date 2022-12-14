@@ -3,17 +3,21 @@ package io.github.CarolinaCedro.POC01.domain.entities;
 import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CnpjGroup;
 import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CpfGroup;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
+import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 import org.hibernate.validator.group.GroupSequenceProvider;
 
-import javax.persistence.*;
-import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,17 +55,15 @@ public class Customer {
 
 
 
-    @Column(nullable = false, length = 14)
-    @NotNull(message = "{campo.cnfOrCnpj.obrigatorio}")
-    @Size(min = 11,max = 14,message = "{campo.cpfOrCnpj.size}")
-    private String cpfOrCnpj;
-
-
-    @Column(nullable = false, length = 2)
-    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     @NotNull(message = "{campo.cnfOrCnpj.obrigatorio}")
     @CPF(groups = CpfGroup.class)
     @CNPJ(groups = CnpjGroup.class)
+    private String cpfOrCnpj;
+
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private PjOrPf pjOrPf;
 
 

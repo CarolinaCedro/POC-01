@@ -2,15 +2,20 @@ package io.github.CarolinaCedro.POC01.application.dto.request;
 
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressConversorResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CnpjGroup;
+import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CpfGroup;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
+import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.br.CNPJ;
+import org.hibernate.validator.constraints.br.CPF;
 
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +39,12 @@ public class CustomerSaveRequest {
     @Size(min = 6,max = 30,message = "{campo.phone.size}")
     private String phone;
 
-    @NotEmpty(message = "{campo.cpfOrCnpj.obrigatorio}")
-    @Size(min = 11,max = 14,message = "{campo.cpfOrCnpj.size}")
+    @Size(min = 12,max = 20,message = "{campo.cpfOrCnpj.size}")
+    @CPF(groups = CpfGroup.class)
+    @CNPJ(groups = CnpjGroup.class)
     private String cpfOrCnpj;
 
-    @NotEmpty(message = "{campo.pjOrPf.obrigatorio}")
+
     private String pjOrPf;
 
     private AddressSaveRequest addressPrincipal;
@@ -48,7 +54,7 @@ public class CustomerSaveRequest {
         this.address = address;
         this.phone = phone;
         this.cpfOrCnpj = cpfOrCnpj;
-        this.pjOrPf = pjOrPf;
+        this.pjOrPf = String.valueOf(PjOrPf.valueOf(pjOrPf));
         this.addressPrincipal = addressPrincipal;
     }
 }

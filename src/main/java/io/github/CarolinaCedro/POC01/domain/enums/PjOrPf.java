@@ -2,11 +2,10 @@ package io.github.CarolinaCedro.POC01.domain.enums;
 
 import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CnpjGroup;
 import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CpfGroup;
-import lombok.Data;
 
 
 public enum PjOrPf {
-//    PJ,PF
+
 
     PF("Física","CPF","000.000.000-00", CpfGroup.class),
     PJ("Jurídica","CNPJ","000.000.000-00", CnpjGroup.class);

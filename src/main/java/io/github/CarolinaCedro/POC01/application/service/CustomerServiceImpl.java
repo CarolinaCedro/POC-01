@@ -2,25 +2,22 @@ package io.github.CarolinaCedro.POC01.application.service;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
-import io.github.CarolinaCedro.POC01.application.dto.response.AddressConversorResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.impl.CustomerService;
 import io.github.CarolinaCedro.POC01.config.errors.FullmailingListException;
-import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
