@@ -20,6 +20,9 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Version   //Lock otimista
+    private Integer version;
     @Column(nullable = false, length = 50)
     @NotNull(message = "{campo.logradouro.obrigatorio}")
     @Size(min = 6, max = 50, message = "{campo.logradouro.size}")

@@ -10,8 +10,12 @@ import java.util.List;
 
 public interface AddressService {
     List<AddressSaveResponse> getAll();
+
     Address findById(Long id);
+
     AddressSaveResponse save(AddressSaveRequest obj) throws IOException;
+
     void deleteById(Long id);
-    Address update(AddressSaveRequest request);
+
+    AddressSaveResponse update(Long id, AddressSaveRequest request) throws IOException;
 }

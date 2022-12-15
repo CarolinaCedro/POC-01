@@ -15,6 +15,7 @@ import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -32,11 +33,13 @@ public class CustomerServiceImpl implements CustomerService {
     private final ModelMapper mapper;
 
     @Override
+    @Cacheable("customer")
     public List<CustomerSaveResponse> findAll() {
         return customerRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
     }
 
     @Override
+    @Cacheable("findCustomer")
     public Customer findById(Long id) {
         Optional<Customer> customerSaveResponse = customerRepository.findById(id);
         return customerSaveResponse.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
@@ -69,6 +72,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.save(customer);
     }
 
+    @Transactional
     @Override
     public Customer update(Long id, CustomerSaveRequest customerSaveRequest) {
         Assert.notNull(id, "Unable to update registration");

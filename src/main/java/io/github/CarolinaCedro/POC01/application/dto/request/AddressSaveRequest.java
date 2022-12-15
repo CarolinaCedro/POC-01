@@ -52,7 +52,7 @@ public class AddressSaveRequest {
         this.isPrincipalAddress = isPrincipalAddress;
     }
 
-    public AddressSaveRequest(Long id) {
+    private AddressSaveRequest(Long id) {
         this.id = id;
     }
 

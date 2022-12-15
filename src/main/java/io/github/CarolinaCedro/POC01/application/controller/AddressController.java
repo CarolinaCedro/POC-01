@@ -45,9 +45,9 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AddressSaveRequest>updateAddress(@PathVariable Long id,@Valid @RequestBody AddressSaveRequest request){
+    public ResponseEntity<AddressSaveResponse>updateAddress(@PathVariable Long id,@Valid @RequestBody AddressSaveRequest request) throws IOException {
         request.setId(id);
-        return ResponseEntity.ok().body(mapper.map(addressService.update(request),AddressSaveRequest.class));
+        return ResponseEntity.ok().body(mapper.map(addressService.update(id,request),AddressSaveResponse.class));
     }
 
 

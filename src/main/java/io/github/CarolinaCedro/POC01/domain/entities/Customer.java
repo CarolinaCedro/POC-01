@@ -33,6 +33,9 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Integer version; //Lock otimista
+
     @Column(nullable = false, length = 30)
     @NotNull(message = "{campo.email.obrigatorio}")
     @Size(min = 5,max = 30,message = "{campo.email.size}")
