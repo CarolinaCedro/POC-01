@@ -4,6 +4,7 @@ import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
+import jakarta.persistence.Cacheable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -35,7 +36,7 @@ public class AddressController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AddressSaveResponse> getById(@PathVariable Long id) {
-        return  ResponseEntity.ok().body(mapper.map(addressService.findById(id),AddressSaveResponse.class));
+        return  ResponseEntity.ok().body(mapper.map(addressService.getById(id),AddressSaveResponse.class));
     }
 
     @PostMapping

@@ -3,17 +3,18 @@ package io.github.CarolinaCedro.POC01.application.service;
 import com.google.gson.Gson;
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
-import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
-import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
-import io.github.CarolinaCedro.POC01.domain.entities.Customer;
-import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -21,7 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -33,32 +34,32 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
-
-    private final AddressRepository addressRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
     private final ModelMapperConfig modelMapper;
 
 
-
-
     @Override
-    @Cacheable("address")
+    @Cacheable("addresses")
     public List<AddressSaveResponse> getAll() {
         return addressRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
     }
 
 
     @Override
-    @Cacheable("FindAddress")
-    public Address findById(Long id) {
+    @Cacheable("address")
+    public Optional<AddressSaveResponse> getById(Long id) {
         Optional<Address> address = addressRepository.findById(id);
-        return address.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
-//        return addressRepository.findById(id).map(this::dto);
+        return addressRepository.findById(id).map(this::dto);
     }
 
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "addresses", allEntries = true),
+            @CacheEvict(value = "address", allEntries = true)})
     public AddressSaveResponse save(AddressSaveRequest request) throws IOException {
         //Consumindo API publica externa
 
@@ -123,7 +124,7 @@ public class AddressServiceImpl implements AddressService {
             db.setUf(addressAux2.getUf());
             db.setIsPrincipalAddress(request.getIsPrincipalAddress());
             addressRepository.save(db);
-            return modelMapper.convert().map(db,AddressSaveResponse.class);
+            return modelMapper.convert().map(db, AddressSaveResponse.class);
         }
         return null;
 

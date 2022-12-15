@@ -33,13 +33,11 @@ public class CustomerServiceImpl implements CustomerService {
     private final ModelMapper mapper;
 
     @Override
-    @Cacheable("customer")
     public List<CustomerSaveResponse> findAll() {
         return customerRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
     }
 
     @Override
-    @Cacheable("findCustomer")
     public Customer findById(Long id) {
         Optional<Customer> customerSaveResponse = customerRepository.findById(id);
         return customerSaveResponse.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));

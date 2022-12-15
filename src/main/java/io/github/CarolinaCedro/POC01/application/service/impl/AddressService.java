@@ -5,13 +5,13 @@ import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveRespons
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface AddressService {
     List<AddressSaveResponse> getAll();
 
-    Address findById(Long id);
+    Optional<AddressSaveResponse> getById(Long id);
 
     AddressSaveResponse save(AddressSaveRequest obj) throws IOException;
 

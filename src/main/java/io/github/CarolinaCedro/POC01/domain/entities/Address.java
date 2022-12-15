@@ -1,6 +1,7 @@
 package io.github.CarolinaCedro.POC01.domain.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @Version   //Lock otimista
     private Integer version;
     @Column(nullable = false, length = 50)
