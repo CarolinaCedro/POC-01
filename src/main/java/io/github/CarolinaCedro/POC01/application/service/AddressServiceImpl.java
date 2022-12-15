@@ -93,6 +93,9 @@ public class AddressServiceImpl implements AddressService {
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "addresses", allEntries = true),
+            @CacheEvict(value = "address", allEntries = true)})
     public AddressSaveResponse update(Long id, AddressSaveRequest request) throws IOException {
 
         Assert.notNull(id, "Unable to update registration");
@@ -132,6 +135,9 @@ public class AddressServiceImpl implements AddressService {
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "addresses", allEntries = true),
+            @CacheEvict(value = "address", allEntries = true)})
     public void deleteById(Long id) {
         Optional<Address> address = addressRepository.findById(id);
         if (address.isPresent()) {
