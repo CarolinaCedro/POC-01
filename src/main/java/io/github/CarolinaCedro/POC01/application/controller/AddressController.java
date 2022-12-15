@@ -25,18 +25,18 @@ public class AddressController {
 
 
     private final AddressService addressService;
-    private final ModelMapper mapper;
+    private final ModelMapperConfig mapper;
 
     @GetMapping
     public ResponseEntity<List<AddressSaveResponse>> getAll() {
         return ResponseEntity.ok().body(addressService.getAll()
-                .stream().map(x -> mapper.map(x,AddressSaveResponse.class))
+                .stream().map(x -> mapper.convert().map(x,AddressSaveResponse.class))
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AddressSaveResponse> getById(@PathVariable Long id) {
-        return  ResponseEntity.ok().body(mapper.map(addressService.getById(id),AddressSaveResponse.class));
+        return   ResponseEntity.ok().body(mapper.convert().map(addressService.getById(id), AddressSaveResponse.class));
     }
 
     @PostMapping
@@ -48,7 +48,7 @@ public class AddressController {
     @PutMapping("/{id}")
     public ResponseEntity<AddressSaveResponse>updateAddress(@PathVariable Long id,@Valid @RequestBody AddressSaveRequest request) throws IOException {
         request.setId(id);
-        return ResponseEntity.ok().body(mapper.map(addressService.update(id,request),AddressSaveResponse.class));
+        return ResponseEntity.ok().body(mapper.convert().map(addressService.update(id,request),AddressSaveResponse.class));
     }
 
 

@@ -2,8 +2,10 @@ package io.github.CarolinaCedro.POC01.application.controller;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.service.CustomerServiceImpl;
+import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,46 +23,51 @@ import java.util.stream.Collectors;
 public class CustomerController {
 
     private final CustomerServiceImpl customerServiceImpl;
-    private final ModelMapper mapper;
+    private final ModelMapperConfig mapper;
 
 
     @GetMapping
     public ResponseEntity<List<CustomerSaveResponse>> getaAll() {
         return ResponseEntity.ok().body(customerServiceImpl.findAll()
-                .stream().map(x -> mapper.map(x,CustomerSaveResponse.class))
+                .stream().map(x -> mapper.convert().map(x, CustomerSaveResponse.class))
                 .collect(Collectors.toList()));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("v1/customer/{id}")
     public ResponseEntity<CustomerSaveResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(mapper.map(customerServiceImpl.findById(id),CustomerSaveResponse.class));
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.getById(id), CustomerSaveResponse.class));
+    }
+
+    @GetMapping("v2/customer/{id}")
+    public ResponseEntity<CustomerMainAddressResponse> getCustomerWithMainAddress(@PathVariable Long id) {
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.findByCustomerMainAddres(id), CustomerMainAddressResponse.class));
     }
 
 
     @GetMapping("/filter")
-    public ResponseEntity<CustomerSaveResponse> getByEmail(@RequestParam(value = "email",required = false, defaultValue = "") String email) {
-        return ResponseEntity.ok().body(mapper.map(customerServiceImpl.findCustomarByEmail(email),CustomerSaveResponse.class));
+    public ResponseEntity<CustomerSaveResponse> getByEmail(@RequestParam(value = "email", required = false, defaultValue = "") String email) {
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.findCustomarByEmail(email), CustomerSaveResponse.class));
 
     }
 
 
-    @GetMapping("/address/customer/principal/{id}")
-    public ResponseEntity<CustomerSaveResponse> getPrincipalAddress(@PathVariable Long id) {
-        return ResponseEntity.ok().body(mapper.map(customerServiceImpl.getPrincipalAddress(id),CustomerSaveResponse.class));
+    @GetMapping("/address/principal/{id}")
+    public ResponseEntity<AddressSaveResponse> getPrincipalAddress(@PathVariable Long id) {
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.getPrincipalAddress(id), AddressSaveResponse.class));
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerSaveRequest>updateAddress(@PathVariable Long id,@RequestBody @Valid CustomerSaveRequest request){
+    public ResponseEntity<CustomerSaveRequest> updateAddress(@PathVariable Long id, @RequestBody @Valid CustomerSaveRequest request) {
         request.setId(id);
-        return ResponseEntity.ok().body(mapper.map(customerServiceImpl.update(id, request),CustomerSaveRequest.class));
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.update(id, request), CustomerSaveRequest.class));
     }
 
 
     @PatchMapping("/updateAddressPrincipal/{id}")
-    public ResponseEntity<CustomerSaveRequest> setAddressPrincipal(@PathVariable Long id, @RequestBody CustomerSaveRequest update) {
+    public ResponseEntity<CustomerSaveResponse> setAddressPrincipal(@PathVariable Long id, @RequestBody CustomerSaveRequest update) {
         update.setId(id);
-        return ResponseEntity.ok().body(mapper.map(customerServiceImpl.changePrincipalAddress(id, update),CustomerSaveRequest.class));
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.changePrincipalAddress(id, update), CustomerSaveResponse.class));
     }
 
     @PostMapping
