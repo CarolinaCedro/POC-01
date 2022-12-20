@@ -1,6 +1,7 @@
 package io.github.CarolinaCedro.POC01.application.controller;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
@@ -8,17 +9,18 @@ import io.github.CarolinaCedro.POC01.application.service.CustomerServiceImpl;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api/customer")
+@CrossOrigin("http://localhost:4200")
 @RequiredArgsConstructor
 public class CustomerController {
 
@@ -26,11 +28,11 @@ public class CustomerController {
     private final ModelMapperConfig mapper;
 
 
+
     @GetMapping
-    public ResponseEntity<List<CustomerSaveResponse>> getaAll() {
-        return ResponseEntity.ok().body(customerServiceImpl.findAll()
-                .stream().map(x -> mapper.convert().map(x, CustomerSaveResponse.class))
-                .collect(Collectors.toList()));
+    public ResponseEntity<Page<CustomerSaveResponse>> getAll(@PageableDefault(page = 0, size = 15, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(customerServiceImpl.findAll(pageable));
     }
 
     @GetMapping("v1/customer/{id}")
@@ -58,9 +60,9 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerSaveRequest> updateAddress(@PathVariable Long id, @RequestBody @Valid CustomerSaveRequest request) {
+    public ResponseEntity<CustomerSaveResponse> updateAddress(@PathVariable Long id, @RequestBody CustomerUpdateRequest request) {
         request.setId(id);
-        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.update(id, request), CustomerSaveRequest.class));
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.update(id, request), CustomerSaveResponse.class));
     }
 
 

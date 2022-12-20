@@ -4,13 +4,15 @@ import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
-import jakarta.persistence.Cacheable;
+import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -27,11 +29,11 @@ public class AddressController {
     private final AddressService addressService;
     private final ModelMapperConfig mapper;
 
+
     @GetMapping
-    public ResponseEntity<List<AddressSaveResponse>> getAll() {
-        return ResponseEntity.ok().body(addressService.getAll()
-                .stream().map(x -> mapper.convert().map(x,AddressSaveResponse.class))
-                .collect(Collectors.toList()));
+    public ResponseEntity<Page<AddressSaveResponse>> getAll(@PageableDefault(page = 0, size = 15, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(addressService.getAll(pageable));
     }
 
     @GetMapping("/{id}")
@@ -57,5 +59,6 @@ public class AddressController {
         addressService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
 
 }

@@ -63,5 +63,14 @@ public class Address {
         this.isPrincipalAddress = isPrincipalAddress;
     }
 
-
+    public Address(Long id, String logradouro, String number, String bairro, String localidade, String cep, String uf, Boolean isPrincipalAddress) {
+        this.id = id;
+        this.logradouro = logradouro;
+        this.number = number;
+        this.bairro = bairro;
+        this.localidade = localidade;
+        this.cep = cep;
+        this.uf = uf;
+        this.isPrincipalAddress = isPrincipalAddress;
+    }
 }

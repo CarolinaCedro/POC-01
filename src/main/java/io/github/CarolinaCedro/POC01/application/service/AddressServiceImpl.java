@@ -4,17 +4,23 @@ import com.google.gson.Gson;
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
+import io.github.CarolinaCedro.POC01.config.app.AppConstants;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -26,26 +32,28 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
-    @Autowired
-    private AddressRepository addressRepository;
+
+    private final AddressRepository addressRepository;
 
     private final ModelMapperConfig modelMapper;
 
-
-    @Override
     @Cacheable("addresses")
-    public List<AddressSaveResponse> getAll() {
-        return addressRepository.findAll().stream().map(this::dto).collect(Collectors.toList());
-    }
+    public Page<AddressSaveResponse> getAll(Pageable pageable) {
+        // If unsorted, set default sorting.
+        if (!pageable.getSort().isSorted()) {
+            pageable = PageRequest.of(pageable.getPageNumber(),
+                    pageable.getPageSize(), Sort.by(AppConstants.UPDATED_ON).descending());
+        }
 
+        Page<Address> page = addressRepository.findAll(pageable);
+        return page.map(this::dto);
+    }
 
     @Override
     @Cacheable("address")
@@ -63,19 +71,7 @@ public class AddressServiceImpl implements AddressService {
     public AddressSaveResponse save(AddressSaveRequest request) throws IOException {
         //Consumindo API publica externa
 
-        URL url = new URL("https://viacep.com.br/ws/" + request.getCep() + "/json/");
-        URLConnection connection = url.openConnection();
-        InputStream is = connection.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-
-        String cep = "";
-        StringBuilder jsonCep = new StringBuilder();
-
-        while ((cep = br.readLine()) != null) {
-            jsonCep.append(cep);
-        }
-
-        AddressSaveRequest addressAux = new Gson().fromJson(jsonCep.toString(), AddressSaveRequest.class);
+        AddressSaveRequest addressAux = consumingCepExternalApi(request.getCep());
 
         request.setLogradouro(request.getLogradouro());
         request.setNumber(request.getNumber());
@@ -100,37 +96,23 @@ public class AddressServiceImpl implements AddressService {
 
         Assert.notNull(id, "Unable to update registration");
         Optional<Address> optional = addressRepository.findById(id);
+        Address response = new Address();
         if (optional.isPresent()) {
             Address db = optional.get();
 
-
-            URL url = new URL("https://viacep.com.br/ws/" + request.getCep() + "/json/");
-            URLConnection connection = url.openConnection();
-            InputStream is = connection.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-
-            String cep = "";
-            StringBuilder jsonCep = new StringBuilder();
-
-            while ((cep = br.readLine()) != null) {
-                jsonCep.append(cep);
-            }
-
-            AddressSaveRequest addressAux2 = new Gson().fromJson(jsonCep.toString(), AddressSaveRequest.class);
-
+            AddressSaveRequest addressAux = consumingCepExternalApi(request.getCep());
 
             db.setLogradouro(request.getLogradouro());
             db.setNumber(request.getNumber());
             db.setBairro(request.getBairro());
-            db.setLocalidade(addressAux2.getLocalidade());
+            db.setLocalidade(addressAux.getLocalidade());
             db.setCep(request.getCep());
-            db.setUf(addressAux2.getUf());
+            db.setUf(addressAux.getUf());
             db.setIsPrincipalAddress(request.getIsPrincipalAddress());
             addressRepository.save(db);
-            return modelMapper.convert().map(db, AddressSaveResponse.class);
+            response = db;
         }
-        return null;
-
+        return modelMapper.convert().map(response,AddressSaveResponse.class);
     }
 
     @Transactional
@@ -147,8 +129,33 @@ public class AddressServiceImpl implements AddressService {
     }
 
 
+
+
+    public AddressSaveRequest consumingCepExternalApi( String requestCep) throws IOException {
+
+        URL url = new URL("https://viacep.com.br/ws/" + requestCep + "/json/");
+        URLConnection connection = url.openConnection();
+        InputStream is = connection.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+        String cep = "";
+        StringBuilder jsonCep = new StringBuilder();
+
+        while ((cep = br.readLine()) != null) {
+            jsonCep.append(cep);
+        }
+
+        AddressSaveRequest addressAux = null;
+
+        return  addressAux = new Gson().fromJson(jsonCep.toString(), AddressSaveRequest.class);
+    }
+
+
+
     public AddressSaveResponse dto(Address address) {
         return modelMapper.convert().map(address, AddressSaveResponse.class);
     }
+
+
 
 }

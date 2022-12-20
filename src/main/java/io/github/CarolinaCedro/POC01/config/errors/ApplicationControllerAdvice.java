@@ -4,7 +4,11 @@ package io.github.CarolinaCedro.POC01.config.errors;
 import io.github.CarolinaCedro.POC01.application.exception.ApiErrors;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.exception.StandardError;
+import io.github.CarolinaCedro.POC01.config.errors.view.ApiResult;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,14 +23,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 
+
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ApplicationControllerAdvice {
 
-
+    @Resource
+    ExceptionManager exceptionManager;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -41,10 +48,17 @@ public class ApplicationControllerAdvice {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handleValidationErrorConstraintViolationException(ConstraintViolationException ex) {
-        String mensagemError = ex.getLocalizedMessage();
-        return new ApiErrors(mensagemError);
+    public ApiResult constraintViolationException(ConstraintViolationException e) {
+        String code = "";
+        Iterator<ConstraintViolation<?>> iterator = e.getConstraintViolations().iterator();
+        if (iterator.hasNext()) {
+            code = (iterator.next()).getMessage();
+        }
+        CustomException exception = exceptionManager.create(code);
+        return ApiResult
+                .error(exception.getCode(), exception.getMessage());
     }
+
 
 
     @ExceptionHandler(ResponseStatusException.class)

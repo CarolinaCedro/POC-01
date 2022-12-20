@@ -21,4 +21,13 @@ public class CustomerSaveResponse {
     private String cpfOrCnpj;
     private String pjOrPf;
 
+    public CustomerSaveResponse(Long id, String email, List<AddressConversorResponse> address, String phone, String cpfOrCnpj, String pjOrPf) {
+        this.id = id;
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.cpfOrCnpj = cpfOrCnpj;
+        this.pjOrPf = pjOrPf;
+    }
+
 }

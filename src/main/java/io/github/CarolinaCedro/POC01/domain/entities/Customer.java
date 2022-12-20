@@ -81,6 +81,15 @@ public class Customer {
         this.addressPrincipal = addressPrincipal;
     }
 
+    public Customer(Long id, String email, Address addressPrincipal, List<Address> address, String phone, String cpfOrCnpj, PjOrPf pjOrPf) {
+        this.id = id;
+        this.email = email;
+        this.addressPrincipal = addressPrincipal;
+        this.address = address;
+        this.phone = phone;
+        this.cpfOrCnpj = cpfOrCnpj;
+        this.pjOrPf = pjOrPf;
+    }
 
     @Transactional
     public void zera() {

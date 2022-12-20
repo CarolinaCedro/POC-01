@@ -1,6 +1,5 @@
 package io.github.CarolinaCedro.POC01.application.dto.response;
 
-import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
