@@ -3,10 +3,12 @@ package io.github.CarolinaCedro.POC01.application.service;
 import com.google.gson.Gson;
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressService;
 import io.github.CarolinaCedro.POC01.config.app.AppConstants;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
+import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -58,8 +60,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Cacheable("address")
     public Optional<AddressSaveResponse> getById(Long id) {
-        Optional<Address> address = addressRepository.findById(id);
-        return addressRepository.findById(id).map(this::dto);
+        return Optional.ofNullable(addressRepository.findById(id).map(this::dto).orElseThrow(
+                () -> new ObjectNotFoundException("Endereço não existe na base de dados ! ")
+        ));
+
     }
 
 
@@ -95,7 +99,9 @@ public class AddressServiceImpl implements AddressService {
     public AddressSaveResponse update(Long id, AddressSaveRequest request) throws IOException {
 
         Assert.notNull(id, "Unable to update registration");
-        Optional<Address> optional = addressRepository.findById(id);
+        Optional<Address> optional = Optional.ofNullable(addressRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundException("Endereço não consta na base de dados")
+        ));
         Address response = new Address();
         if (optional.isPresent()) {
             Address db = optional.get();
@@ -121,11 +127,12 @@ public class AddressServiceImpl implements AddressService {
             @CacheEvict(value = "addresses", allEntries = true),
             @CacheEvict(value = "address", allEntries = true)})
     public void deleteById(Long id) {
-        Optional<Address> address = addressRepository.findById(id);
-        if (address.isPresent()) {
+        Optional<Address> customer = Optional.ofNullable(addressRepository.findById(id).orElseThrow(() ->
+                new ObjectNotFoundException("Endereço não consta na base de dados")
+        ));
+        if (customer.isPresent()) {
             addressRepository.deleteById(id);
         }
-
     }
 
 

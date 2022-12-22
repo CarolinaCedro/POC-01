@@ -1,11 +1,11 @@
 package io.github.CarolinaCedro.POC01.application.service;
 
-import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
+import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.impl.CustomerService;
 import io.github.CarolinaCedro.POC01.config.errors.FullmailingListException;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
@@ -42,12 +42,16 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Optional<CustomerSaveResponse> getById(Long id) {
-        return customerRepository.findById(id).map(this::dtoCustomerFullAddress);
+        return Optional.ofNullable(customerRepository.findById(id).map(this::dtoCustomerFullAddress).orElseThrow(
+                () -> new ObjectNotFoundException("Cliente não existe na base de dados ! ")
+        ));
     }
 
     @Override
     public Optional<CustomerMainAddressResponse> findByCustomerMainAddres(Long id) {
-        return customerRepository.findById(id).map(this::dtoMainAdrress);
+        return Optional.ofNullable(customerRepository.findById(id).map(this::dtoMainAdrress).orElseThrow(
+                () -> new ObjectNotFoundException("Cliente não existe na base de dados ! ")
+        ));
     }
 
 
@@ -67,28 +71,39 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (idPrincipal != null) {
             Optional<Address> principalAddress = addressRepository.findById(idPrincipal);
-            if (addressList.size() > 5) {
-                throw new FullmailingListException("Atenção:Tamanho permitido para a lista de endereços foi excedido.");
+            if (addressList.size() >= 6) {
+                throw new FullmailingListException("Atenção:tamanho permitido para a lista de endereços foi excedido.");
             }
             customer = new Customer(request.getEmail(), addressList, request.getPhone(),
                     request.getCpfOrCnpj(), request.getPjOrPf(), principalAddress.get()
             );
 
+        }else {
+            throw new ObjectNotFoundException("Endereço principal não existe na base de dados ! ");
         }
+
 
         return mapper.convert().map(customerRepository.save(customer),CustomerSaveResponse.class);
     }
 
     @Transactional
     @Override
-    public CustomerSaveResponse update(Long id, @Valid CustomerUpdateRequest request) {
-        Assert.notNull(id, "Unable to update registration");
-
-        Optional<Customer> optional = customerRepository.findById(id);
-        List<Address> addressList = addressRepository.findAllById(request.getAddress());
+    public CustomerSaveResponse update(Long id,@Valid CustomerUpdateRequest request) {
+        Assert.notNull(request.getId(), "Unable to update registration");
         Customer response = new Customer();
 
-        if (optional.isPresent()) {
+        Optional<Customer> optional = customerRepository.findById(request.getId());
+        if (optional.isPresent()){
+            List<Address> addressList = addressRepository.findAllById(request.getAddress());
+            if (addressList.size() >= 6){
+                throw new FullmailingListException("Você excedeu o limite máximo disponível de endereços ! Exclua endereços não utilizados para prosseguir.");
+            }
+
+            Address principal = optional.get().getAddressPrincipal();
+
+            CustomerUpdateRequest update = new CustomerUpdateRequest();
+            update.setFalse(addressList,principal);
+
             Customer db = optional.get();
             db.setEmail(request.getEmail());
             db.setAddress(addressList);
@@ -97,8 +112,8 @@ public class CustomerServiceImpl implements CustomerService {
             db.setPjOrPf(PjOrPf.valueOf(request.getPjOrPf()));
             customerRepository.save(db);
             response = db;
-
         }
+
         return  mapper.convert().map(response,CustomerSaveResponse.class);
     }
 
@@ -106,13 +121,17 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public CustomerSaveResponse  changePrincipalAddress(Long id, CustomerSaveRequest update) {
         Assert.notNull(id, "Não foi possivel atualizar o registro");
-        Optional<Customer> optional = customerRepository.findById(id);
-        Optional<Address> addressUpdate = addressRepository.findById(update.getAddressPrincipal().getId());
+        Optional<Customer> optional = Optional.ofNullable(customerRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundException("Cliente não existe na base de dados ! ")
+        ));
+        Optional<Address> addressUpdate = Optional.ofNullable(addressRepository.findById(update.getAddressPrincipal().getId()).orElseThrow(
+                () -> new ObjectNotFoundException("Endereço não existe na base de dados ! ")));
+
         Customer response = new Customer();
 
         if (optional.isPresent()) {
             Customer db = optional.get();
-            db.zera();
+            db.resetRealAddressers();
             if (addressUpdate.isPresent()) {
                 db.setAddressPrincipal(addressUpdate.get());
                 Address address = addressUpdate.get();
@@ -128,7 +147,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Optional<AddressSaveResponse> getPrincipalAddress(Long id) {
-        Optional<Customer> customer = customerRepository.findById(id);
+        Optional<Customer> customer = Optional.ofNullable(customerRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundException("Endereço não existe na base de dados ! ")
+        ));
+
         if (customer.isPresent()) {
             Long address = customer.get().getAddressPrincipal().getId();
             return addressRepository.findById(address).map(this::addressDtoConverter);
@@ -137,14 +159,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerSaveResponse> findCustomarByEmail(String email) {
+    public List<CustomerSaveResponse> findCustomerByEmail(String email) {
         return customerRepository.findByEmail("%" + email + "%").stream().map(this::dtoCustomerFullAddress).collect(Collectors.toList());
     }
 
     @Transactional
     @Override
     public void deleteById(Long id) {
-        Optional<Customer> customer = customerRepository.findById(id);
+
+        Optional<Customer> customer = Optional.ofNullable(customerRepository.findById(id).orElseThrow(() ->
+                new ObjectNotFoundException("Cliente não consta na base de dados")
+        ));
         if (customer.isPresent()) {
             customerRepository.deleteById(id);
         }
@@ -164,6 +189,5 @@ public class CustomerServiceImpl implements CustomerService {
     public AddressSaveResponse addressDtoConverter(Address address) {
         return mapper.convert().map(address, AddressSaveResponse.class);
     }
-
 
 }

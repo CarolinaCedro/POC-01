@@ -21,7 +21,7 @@ public interface CustomerService {
 
     CustomerSaveResponse changePrincipalAddress(Long id,CustomerSaveRequest update);
     Optional<AddressSaveResponse>getPrincipalAddress(Long id);
-    List<CustomerSaveResponse>findCustomarByEmail(String email); //filter
+    List<CustomerSaveResponse>findCustomerByEmail(String email); //filter
 
     CustomerSaveResponse update(Long id, CustomerUpdateRequest request);
 

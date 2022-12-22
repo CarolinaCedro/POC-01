@@ -21,6 +21,7 @@ public class AddressConversorResponse {
     private AddressRepository addressRepository;
 
     private Long id;
+    private Integer version;
     private String logradouro;
     private String number;
     private String bairro;
@@ -42,7 +43,9 @@ public class AddressConversorResponse {
         List<Address> addressList = addressRepository.findAllById(listOfIds);
         for (Address res : addressList
         ) {
+
             this.id = res.getId();
+            this.version = res.getVersion();
             this.logradouro = res.getLogradouro();
             this.number = res.getNumber();
             this.bairro = res.getBairro();
@@ -54,8 +57,9 @@ public class AddressConversorResponse {
 
     }
 
-    public AddressConversorResponse(Long id, String logradouro, String number, String bairro, String localidade, String cep, String uf, boolean isPrincipalAddress) {
+    public AddressConversorResponse(Long id, Integer version, String logradouro, String number, String bairro, String localidade, String cep, String uf, boolean isPrincipalAddress) {
         this.id = id;
+        this.version = version;
         this.logradouro = logradouro;
         this.number = number;
         this.bairro = bairro;

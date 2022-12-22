@@ -30,4 +30,12 @@ public class CustomerSaveResponse {
         this.pjOrPf = pjOrPf;
     }
 
+    public CustomerSaveResponse(Long id, String email, Address addressPrincipal, String phone, String cpfOrCnpj, String pjOrPf) {
+        this.id = id;
+        this.email = email;
+        this.addressPrincipal = addressPrincipal;
+        this.phone = phone;
+        this.cpfOrCnpj = cpfOrCnpj;
+        this.pjOrPf = pjOrPf;
+    }
 }

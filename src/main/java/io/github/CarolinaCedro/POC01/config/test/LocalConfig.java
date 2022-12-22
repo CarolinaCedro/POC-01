@@ -23,11 +23,8 @@ public class LocalConfig {
     @Bean
     public void StartDb(){
 
-        Address address1 = new Address("Rua da food","45","brasil","Santa helena","76895000","Goiás",true);
-        Address address2 = new Address("Rua da food","45","brasil","Santa helena","76895000","Goiás",true);
-        Address address3 = new Address("Rua da food","45","brasil","Santa helena","76895000","Goiás",true);
-
-        addressRepository.saveAll(List.of(address1,address2,address3));
+        Address address1 = new Address("Rua da food","45","brasil","Santa helena","76895000","Goiás",false);
+        addressRepository.saveAll(List.of(address1));
     }
 
 }

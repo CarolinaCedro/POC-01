@@ -1,13 +1,16 @@
 package io.github.CarolinaCedro.POC01.domain.entities;
 
+import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateRequest;
 import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CnpjGroup;
 import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CpfGroup;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
+import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,11 +18,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 import org.hibernate.validator.group.GroupSequenceProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table
@@ -27,6 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @GroupSequenceProvider(CustomerGroupSequenceProvider.class)
+@Builder
 public class Customer {
 
     @Id
@@ -38,29 +41,28 @@ public class Customer {
 
     @Column(nullable = false, length = 30)
     @NotNull(message = "{campo.email.obrigatorio}")
-    @Size(min = 5,max = 30,message = "{campo.email.size}")
+    @Size(min = 5, max = 30, message = "{campo.email.size}")
     private String email;
 
     @OneToOne
     private Address addressPrincipal;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @Column(nullable = false, length = 50)
     @NotNull(message = "{campo.address.obrigatorio}")
-    @Size(min = 1,max = 5,message = "{campo.addressList.size}")
+    @Size(min = 1, max = 5, message = "{campo.addressList.size}")
     private List<Address> address = new ArrayList<>();
 
 
     @Column(nullable = false, length = 30)
     @NotNull(message = "{campo.phone.obrigatorio}")
-    @Size(min = 6,max = 30,message = "{campo.phone.size}")
+    @Size(min = 6, max = 30, message = "{campo.phone.size}")
     private String phone;
-
 
 
     @Column(nullable = false)
     @NotNull(message = "{campo.cnfOrCnpj.obrigatorio}")
-    @Size(min = 11,max = 18,message = "{campo.cpfOrCnpj.size}")
+    @Size(min = 11, max = 18, message = "{campo.cpfOrCnpj.size}")
     @CPF(groups = CpfGroup.class)
     @CNPJ(groups = CnpjGroup.class)
     private String cpfOrCnpj;
@@ -92,7 +94,7 @@ public class Customer {
     }
 
     @Transactional
-    public void zera() {
+    public void resetRealAddressers() {
         for (Address response : address
         ) {
             response.setIsPrincipalAddress(false);

@@ -2,10 +2,12 @@ package io.github.CarolinaCedro.POC01.application.service.impl;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.AddressServiceImpl;
 import io.github.CarolinaCedro.POC01.config.app.AppConstants;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
+import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -147,17 +149,21 @@ class AddressServiceImplTest {
     @Test
     void whenUpdateThenReturnSucess() throws IOException {
 
-        Mockito.when(repository.save(address)).thenReturn(address);
-        AddressSaveResponse response = service.update(address.getId(), addressSaveRequest);
+        Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(address);
+        Mockito.when(repository.findById(ArgumentMatchers.any())).thenReturn(Optional.of(address));
+
+        AddressSaveResponse response = service.update(ID, addressSaveRequest);
         assertNotNull(response);
         assertEquals(AddressSaveResponse.class, response.getClass());
         assertEquals(ID, response.getId());
-        assertEquals(STREET, response.getLogradouro());
-        assertEquals(NUMBER, response.getNumber());
-        assertEquals(NEIGHBORHOOD, response.getLocalidade());
-        assertEquals(ZIP_CODE, response.getCep());
-        assertEquals(STATE, response.getUf());
-        assertEquals(IS_PRINCIPAL_ADDRESS, response.isPrincipalAddress());
+        assertEquals(ID,response.getId());
+        assertEquals(STREET,response.getLogradouro());
+        assertEquals(NUMBER,response.getNumber());
+        assertEquals(NEIGHBORHOOD,response.getBairro());
+        assertEquals(ZIP_CODE,response.getCep());
+        assertEquals(CITY,response.getLocalidade());
+        assertEquals(STATE,response.getUf());
+        assertEquals(IS_PRINCIPAL_ADDRESS,response.isPrincipalAddress());
     }
 
 

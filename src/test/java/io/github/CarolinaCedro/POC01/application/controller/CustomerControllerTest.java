@@ -2,6 +2,7 @@ package io.github.CarolinaCedro.POC01.application.controller;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressConversorResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +67,8 @@ class CustomerControllerTest {
     private List<CustomerSaveResponse> customerSaveResponses;
     private CustomerSaveRequest customerSaveRequest;
     private CustomerSaveResponse customerSaveResponse;
+
+    private CustomerUpdateRequest customerUpdateRequest;
     private Optional<Customer> customerOptional;
     private Optional<CustomerSaveResponse> customerSaveResponseOptional;
     private Optional<AddressSaveResponse> addressSaveResponseOptional;
@@ -126,7 +130,7 @@ class CustomerControllerTest {
 
     @Test
     void whenFindByEmailThenReturnSucessController() {
-        when(service.findCustomarByEmail(anyString())).thenReturn(List.of(customerSaveResponse));
+        when(service.findCustomerByEmail(anyString())).thenReturn(List.of(customerSaveResponse));
         when(mapper.map(any(), any())).thenReturn(customerSaveResponse);
         ResponseEntity<CustomerSaveResponse> response = controller.getByEmail(EMAIL);
         assertNotNull(response);
@@ -155,11 +159,28 @@ class CustomerControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
+
+
+
     @Test
     void whenSetAddressPrincipalThenReturnUpdateSucess() {
         when(service.changePrincipalAddress(ID, customerSaveRequest)).thenReturn(customerSaveResponse);
         when(mapper.map(any(), any())).thenReturn(customerSaveResponse);
         ResponseEntity<CustomerSaveResponse> response = controller.setAddressPrincipal(ID, customerSaveRequest);
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(CustomerSaveResponse.class, response.getBody().getClass());
+
+        assertEquals(ID, response.getBody().getId());
+    }
+
+    @Test
+    void whenUpdateAddressSucess() {
+        when(service.update(ID, customerUpdateRequest)).thenReturn(customerSaveResponse);
+        when(mapper.map(any(), any())).thenReturn(customerSaveResponse);
+        ResponseEntity<CustomerSaveResponse> response = controller.updateAddress(ID, customerUpdateRequest);
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -195,6 +216,7 @@ class CustomerControllerTest {
         addressSaveRequest = new AddressSaveRequest(ID, LOGRADOURO, NUMBER, BAIRRO, LOCALIDADE, CEP, UF, IS_PRINCIPAL_ADDRESS);
         addressSaveResponse = new AddressSaveResponse(ID, LOGRADOURO, NUMBER, BAIRRO, LOCALIDADE, CEP, UF, IS_PRINCIPAL_ADDRESS);
         customerSaveRequest = new CustomerSaveRequest(ID, EMAIL, longList, PHONE, CPF_OR_CNPJ, PjOrPf.PJ.toString(), addressSaveRequest);
+        customerUpdateRequest = new CustomerUpdateRequest(ID,EMAIL,longList,PHONE,CPF_OR_CNPJ,PJ_OR_PF);
         customerSaveResponse = new CustomerSaveResponse(ID, EMAIL, address, addressConversorResponses, PHONE, CPF_OR_CNPJ, PjOrPf.PF.toString());
         customerMainAddressResponse = new CustomerMainAddressResponse(ID,EMAIL,address,PHONE,CPF_OR_CNPJ,PjOrPf.PF);
     }

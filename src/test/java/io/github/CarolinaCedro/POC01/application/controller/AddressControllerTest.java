@@ -55,7 +55,6 @@ class AddressControllerTest {
 
     private Optional<AddressSaveResponse> addressSaveResponseOptional;
     private Page<AddressSaveResponse>addressPageResponse;
-
     public static final long ID = 1L;
     public static final String LOGRADOURO = "Rua da paciencia";
     public static final String NUMBER = "456";
@@ -64,6 +63,7 @@ class AddressControllerTest {
     public static final String CEP = "9870766";
     public static final String UF = "Goiás";
     public static final boolean IS_PRINCIPAL_ADDRESS = false;
+
 
 
     @BeforeEach

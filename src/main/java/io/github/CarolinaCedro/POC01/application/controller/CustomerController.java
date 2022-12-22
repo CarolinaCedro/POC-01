@@ -8,6 +8,7 @@ import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveRespon
 import io.github.CarolinaCedro.POC01.application.service.CustomerServiceImpl;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import jakarta.validation.Valid;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/customer")
 @CrossOrigin("http://localhost:4200")
 @RequiredArgsConstructor
+@Builder
 public class CustomerController {
 
     private final CustomerServiceImpl customerServiceImpl;
@@ -48,7 +50,7 @@ public class CustomerController {
 
     @GetMapping("/filter")
     public ResponseEntity<CustomerSaveResponse> getByEmail(@RequestParam(value = "email", required = false, defaultValue = "") String email) {
-        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.findCustomarByEmail(email), CustomerSaveResponse.class));
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.findCustomerByEmail(email), CustomerSaveResponse.class));
 
     }
 
