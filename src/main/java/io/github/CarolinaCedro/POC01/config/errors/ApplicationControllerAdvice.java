@@ -2,8 +2,15 @@ package io.github.CarolinaCedro.POC01.config.errors;
 
 
 import io.github.CarolinaCedro.POC01.application.exception.ApiErrors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
+import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
+import io.github.CarolinaCedro.POC01.application.exception.StandardError;
+import io.github.CarolinaCedro.POC01.config.errors.view.ApiResult;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
@@ -15,33 +22,50 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
+
+
+import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ApplicationControllerAdvice {
 
-    @Autowired
-    private MessageSource messageSource;
+    @Resource
+    ExceptionManager exceptionManager;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiErrors handleValidationErros(MethodArgumentNotValidException ex) {
+    public ApiErrors handleValidationErrorMethodArgumentNotValidadeException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         List<String> messages = bindingResult.getAllErrors()
                 .stream()
-                .map(objectError -> objectError.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
         return new ApiErrors(messages);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResult constraintViolationException(ConstraintViolationException e) {
+        String code = "";
+        Iterator<ConstraintViolation<?>> iterator = e.getConstraintViolations().iterator();
+        if (iterator.hasNext()) {
+            code = (iterator.next()).getMessage();
+        }
+        CustomException exception = exceptionManager.create(code);
+        return ApiResult
+                .error(exception.getCode(), exception.getMessage());
+    }
+
+
+
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity handleResponseStatusException(ResponseStatusException ex) {
-        String mensagemErro = ex.getReason();
-        HttpStatus codigoStatus = ex.getStatus();
-        ApiErrors apiErrors = new ApiErrors(mensagemErro);
-        return new ResponseEntity(apiErrors, codigoStatus);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrors handleResponseStatusException(ResponseStatusException ex){
+        String mensagemError = ex.getMessage();
+        return new ApiErrors(mensagemError);
     }
 
 
@@ -66,6 +90,13 @@ public class ApplicationControllerAdvice {
         return new ApiErrors(mensagemError);
     }
 
+
+    @ExceptionHandler(ObjectNotFoundException.class)
+    public ResponseEntity<StandardError>objectNotFound(ObjectNotFoundException ex, HttpServletRequest request) {
+        StandardError error =
+                new StandardError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 
 
 

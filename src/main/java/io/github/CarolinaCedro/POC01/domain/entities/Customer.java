@@ -1,59 +1,75 @@
 package io.github.CarolinaCedro.POC01.domain.entities;
 
+import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateRequest;
+import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CnpjGroup;
+import io.github.CarolinaCedro.POC01.domain.CpfOrCnpjInterfaces.CpfGroup;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
+import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
+import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.hibernate.validator.constraints.br.CNPJ;
+import org.hibernate.validator.constraints.br.CPF;
+import org.hibernate.validator.group.GroupSequenceProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+
+
+import java.util.*;
 
 @Entity
 @Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@GroupSequenceProvider(CustomerGroupSequenceProvider.class)
 public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Integer version; //Lock otimista
+
     @Column(nullable = false, length = 30)
     @NotNull(message = "{campo.email.obrigatorio}")
-    @Size(min = 5,max = 30,message = "{campo.email.size}")
+    @Size(min = 5, max = 30, message = "{campo.email.size}")
     private String email;
 
     @OneToOne
     private Address addressPrincipal;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @Column(nullable = false, length = 50)
     @NotNull(message = "{campo.address.obrigatorio}")
-    @Size(min = 1,max = 5,message = "{campo.addressList.size}")
+    @Size(min = 1, max = 5, message = "{campo.addressList.size}")
     private List<Address> address = new ArrayList<>();
 
 
     @Column(nullable = false, length = 30)
     @NotNull(message = "{campo.phone.obrigatorio}")
-    @Size(min = 6,max = 30,message = "{campo.phone.size}")
+    @Size(min = 6, max = 30, message = "{campo.phone.size}")
     private String phone;
 
 
-
-    @Column(nullable = false, length = 14)
+    @Column(nullable = false)
     @NotNull(message = "{campo.cnfOrCnpj.obrigatorio}")
-    @Size(min = 11,max = 14,message = "{campo.cpfOrCnpj.size}")
+    @Size(min = 11, max = 18, message = "{campo.cpfOrCnpj.size}")
+    @CPF(groups = CpfGroup.class)
+    @CNPJ(groups = CnpjGroup.class)
     private String cpfOrCnpj;
 
 
-    @Column(nullable = false, length = 2)
+    @Column(nullable = false)
+    @NotNull(message = "{campo.PjOrPf.obrigatorio}")
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "{campo.cnfOrCnpj.obrigatorio}")
     private PjOrPf pjOrPf;
 
 
@@ -66,9 +82,18 @@ public class Customer {
         this.addressPrincipal = addressPrincipal;
     }
 
+    public Customer(Long id, String email, Address addressPrincipal, List<Address> address, String phone, String cpfOrCnpj, PjOrPf pjOrPf) {
+        this.id = id;
+        this.email = email;
+        this.addressPrincipal = addressPrincipal;
+        this.address = address;
+        this.phone = phone;
+        this.cpfOrCnpj = cpfOrCnpj;
+        this.pjOrPf = pjOrPf;
+    }
 
     @Transactional
-    public void zera() {
+    public void resetRealAddressers() {
         for (Address response : address
         ) {
             response.setIsPrincipalAddress(false);

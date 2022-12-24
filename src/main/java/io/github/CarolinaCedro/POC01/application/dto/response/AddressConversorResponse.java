@@ -21,12 +21,13 @@ public class AddressConversorResponse {
     private AddressRepository addressRepository;
 
     private Long id;
-    private String street;
+    private Integer version;
+    private String logradouro;
     private String number;
-    private String neighborhood;
-    private String city;
-    private String zipCode;
-    private String state;
+    private String bairro;
+    private String localidade;
+    private String cep;
+    private String uf;
     private boolean isPrincipalAddress;
 
 
@@ -42,15 +43,29 @@ public class AddressConversorResponse {
         List<Address> addressList = addressRepository.findAllById(listOfIds);
         for (Address res : addressList
         ) {
+
             this.id = res.getId();
-            this.street = res.getStreet();
+            this.version = res.getVersion();
+            this.logradouro = res.getLogradouro();
             this.number = res.getNumber();
-            this.neighborhood = res.getNeighborhood();
-            this.city = res.getCity();
-            this.zipCode = res.getZipCode();
-            this.state = res.getState();
+            this.bairro = res.getBairro();
+            this.localidade = res.getLocalidade();
+            this.cep = res.getCep();
+            this.uf = res.getUf();
             this.isPrincipalAddress = res.getIsPrincipalAddress();
         }
 
+    }
+
+    public AddressConversorResponse(Long id, Integer version, String logradouro, String number, String bairro, String localidade, String cep, String uf, boolean isPrincipalAddress) {
+        this.id = id;
+        this.version = version;
+        this.logradouro = logradouro;
+        this.number = number;
+        this.bairro = bairro;
+        this.localidade = localidade;
+        this.cep = cep;
+        this.uf = uf;
+        this.isPrincipalAddress = isPrincipalAddress;
     }
 }

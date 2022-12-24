@@ -1,58 +1,92 @@
 package io.github.CarolinaCedro.POC01.application.controller;
 
-import io.github.CarolinaCedro.POC01.application.dto.request.CustomerAddressPrincipalUpdate;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
+import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateRequest;
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
-import io.github.CarolinaCedro.POC01.application.service.CustomerService;
-import io.github.CarolinaCedro.POC01.domain.entities.Address;
+import io.github.CarolinaCedro.POC01.application.service.impl.CustomerServiceImpl;
+import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
 import io.github.CarolinaCedro.POC01.domain.entities.Customer;
+import jakarta.validation.Valid;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/customer")
+@CrossOrigin("http://localhost:4200")
 @RequiredArgsConstructor
 public class CustomerController {
 
-    private final CustomerService customerService;
+    private final CustomerServiceImpl customerServiceImpl;
+    private final ModelMapperConfig mapper;
+
 
 
     @GetMapping
-    public ResponseEntity<?> getaAll() {
-        return ResponseEntity.ok(customerService.findAll());
+    public ResponseEntity<Page<CustomerSaveResponse>> getAll(@PageableDefault(page = 0, size = 15, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(customerServiceImpl.findAll(pageable));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(customerService.findById(id));
+    @GetMapping("v1/customer/{id}")
+    public ResponseEntity<CustomerSaveResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.getById(id), CustomerSaveResponse.class));
+    }
+
+    @GetMapping("v2/customer/{id}")
+    public ResponseEntity<CustomerMainAddressResponse> getCustomerWithMainAddress(@PathVariable Long id) {
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.findByCustomerMainAddres(id), CustomerMainAddressResponse.class));
     }
 
 
     @GetMapping("/filter")
-    public ResponseEntity<?> getByEmail(@RequestParam(value = "email",required = false, defaultValue = "") String email) {
-        return ResponseEntity.ok(customerService.findCustomarByEmail(email));
+    public ResponseEntity<List<CustomerSaveResponse>> getByEmail(@RequestParam("email") String email) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(customerServiceImpl.findCustomerByEmail(email));
     }
 
 
-    @GetMapping("/address/customer/principal/{id}")
-    public ResponseEntity<?> getPrincipalAddress(@PathVariable Long id) {
-        return ResponseEntity.ok(customerService.getPrincipalAddress(id));
+
+    @GetMapping("/address/principal/{id}")
+    public ResponseEntity<AddressSaveResponse> getPrincipalAddress(@PathVariable Long id) {
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.getPrincipalAddress(id), AddressSaveResponse.class));
+
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerSaveResponse> updateAddress(@PathVariable Long id, @RequestBody CustomerUpdateRequest request) {
+        request.setId(id);
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.update(id, request), CustomerSaveResponse.class));
+    }
+
 
     @PatchMapping("/updateAddressPrincipal/{id}")
-    public ResponseEntity<?> setAddressPrincipal(@PathVariable Long id, @RequestBody CustomerSaveRequest update) {
+    public ResponseEntity<CustomerSaveResponse> setAddressPrincipal(@PathVariable Long id, @RequestBody CustomerSaveRequest update) {
         update.setId(id);
-        return ResponseEntity.ok(customerService.changePrincipalAddress(id, update));
+        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.changePrincipalAddress(id, update), CustomerSaveResponse.class));
     }
 
     @PostMapping
-    public ResponseEntity<?> createCustomer(@RequestBody @Valid CustomerSaveRequest request) {
-        customerService.create(request);
+    public ResponseEntity<CustomerSaveRequest> createCustomer(@RequestBody @Valid CustomerSaveRequest request) {
+        customerServiceImpl.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<CustomerSaveResponse> deleteCustomer(@PathVariable Long id) {
+        customerServiceImpl.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
