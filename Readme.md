@@ -83,5 +83,5 @@ Quando não estou estudando ou trabalhando, gosto de escutar músicas e jogar jo
 
 Agradeço pela atenção e espero poder contribuir com minhas habilidades e conhecimentos em projetos futuros. 
 
-:purple_heart:Obrigado!
+Obrigado! :purple_heart:
 
