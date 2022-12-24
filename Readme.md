@@ -82,5 +82,6 @@ Para baixar e rodar o projeto Java, siga os passos abaixo:
 Quando não estou estudando ou trabalhando, gosto de escutar músicas e jogar joguinhos MMORPG. Moro no estado de Goiás e, caso as pessoas estejam interessadas em saber mais sobre mim, podem acessar o meu link https://linktr.ee/CarolinaCedro.
 
 Agradeço pela atenção e espero poder contribuir com minhas habilidades e conhecimentos em projetos futuros. 
+
 :purple_heart:Obrigado!
 
