@@ -75,11 +75,11 @@ Para baixar e rodar o projeto Java, siga os passos abaixo:
 
 5. Acesse a aplicação em seu navegador pelo endereço: `http://localhost:8080`
 
-### Conheça mais sobre mim
+## Conheça mais sobre mim
 
 :sunflower: Olá, meu nome é Carolina Cedro e sou estudante de Engenharia de Software. Tenho conhecimentos em desenvolvimento web, especialmente no front end com tecnologias como React, HTML, CSS e JavaScript, e no backend com Java, Spring Boot e Hibernate. Além disso, também tenho experiência com o banco de dados MySQL.
 
-Quando não estou estudando ou trabalhando, gosto de escutar músicas e jogar joguinhos MMORPG. Moro no estado de Goiás e, caso as pessoas estejam interessadas em saber mais sobre mim, podem acessar o meu link ``https://linktr.ee/CarolinaCedro.``
+Quando não estou estudando ou trabalhando, gosto de escutar músicas e jogar joguinhos MMORPG. Moro no estado de Goiás e, caso as pessoas estejam interessadas em saber mais sobre mim, podem acessar o meu link https://linktr.ee/CarolinaCedro.
 
-Agradeço pela atenção e espero poder contribuir com minhas habilidades e conhecimentos em projetos futuros. Obrigado!
+Agradeço pela atenção e espero poder contribuir com minhas habilidades e conhecimentos em projetos futuros. :purple_heart:Obrigado!
 
