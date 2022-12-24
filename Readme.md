@@ -20,15 +20,15 @@ Gostaria de apresentar a API Poc 01, que permite gerenciar os clientes e endere�
 * Associar um endereço a um cliente ou desassociá-los.
 
 Foi utilizado uma arquitetura REST e os métodos HTTP padrão 
-(GET, POST, PUT,PATH e DELETE) para disponibilizar essas funcionalidades. Além disso, implementamos autenticação através de tokens de acesso para garantir a segurança dos dados.
+(GET, POST, PUT,PATH e DELETE) para disponibilizar essas funcionalidades. 
 
 O modelo de dados dessa API inclui dois tipos de recursos: clientes e endereços. Cada cliente possui um ID único, email, cpf/cnpj, tipo (PJ ou PF), endereço, telefone, e pode ter 1 ou até 5  endereços associados a ele. Já os endereços possuem um ID único, um nome de rua, numero, bairro, cidade, cep, estado.
 
-API Poc possui um relacionamento de entidade entre os recursos de clientes (customers) e endereços (addresses). Segundo as regras de negócio, cada cliente pode ter no máximo 5 endereços cadastrados e deve sempre possuir um endereço principal. É possível realizar operações de CRUD (criar, ler, atualizar e excluir) tanto para clientes quanto para endereços, além de tornar um endereço um endereço principal.
+API Poc possui um relacionamento de entidade entre os recursos de clientes (customers) e endereços (addresses). Segundo as regras de negócio, cada cliente pode ter no máximo 5 endereços cadastrados e deve sempre possuir um endereço principal. É possível realizar operações de CRUD (criar, ler, atualizar e excluir) tanto para clientes quanto para endereços, além de tornar um endereço comum em um endereço principal.
 
 Para garantir a qualidade dos dados, foi incluído validações e máscaras em alguns campos, como o CEP e o número de telefone. Além disso, utilizamos o padrão REST e o framework Spring Boot para desenvolver a API de forma eficiente e seguindo os princípios SOLID.
 
-Para facilitar o uso da API, também foi incluído paginação e filtros nas consultas através do método GET. Também versionamos o código da aplicação no GitHub e realizamos testes de integração e unitários para garantir a qualidade do código. Por fim, utilizamos um banco de dados em memória para armazenar os dados.
+Para facilitar o uso da API, também foi incluído paginação e filtros nas consultas através do método GET. Também foi versionado o código da aplicação no GitHub e foi realizado testes de integração e unitários para garantir a qualidade do código. Por fim, foi utilizado um banco de dados em memória para armazenar os dados.
 
 ## Build configuration
 
