@@ -17,9 +17,8 @@ public class AddressCreator {
                 .build();
     }
 
-    public static Address createValidAddress(){
+    public static Address createValidAddressUpdatePrincipal(){
         return Address.builder()
-                .id(1L)
                 .version(1)
                 .logradouro("Rua dos testes")
                 .number("45")
@@ -27,7 +26,7 @@ public class AddressCreator {
                 .localidade("Santa helena de goias")
                 .cep("75920000")
                 .uf("GO")
-                .isPrincipalAddress(true)
+                .isPrincipalAddress(false)
                 .build();
     }
 

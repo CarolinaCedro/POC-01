@@ -1,15 +1,12 @@
-package io.github.CarolinaCedro.POC01.application.service.impl;
+package io.github.CarolinaCedro.POC01.application.service;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
-import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
-import io.github.CarolinaCedro.POC01.application.service.AddressServiceImpl;
+import io.github.CarolinaCedro.POC01.application.service.impl.AddressServiceImpl;
 import io.github.CarolinaCedro.POC01.config.app.AppConstants;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
-import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -20,9 +17,7 @@ import org.springframework.data.domain.*;
 import org.springframework.ui.ModelMap;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

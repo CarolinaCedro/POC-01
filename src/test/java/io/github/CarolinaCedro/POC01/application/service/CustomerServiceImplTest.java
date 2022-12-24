@@ -1,4 +1,4 @@
-package io.github.CarolinaCedro.POC01.application.service.impl;
+package io.github.CarolinaCedro.POC01.application.service;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
@@ -8,14 +8,13 @@ import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveRespons
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
-import io.github.CarolinaCedro.POC01.application.service.CustomerServiceImpl;
+import io.github.CarolinaCedro.POC01.application.service.impl.CustomerServiceImpl;
 import io.github.CarolinaCedro.POC01.config.app.AppConstants;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import io.github.CarolinaCedro.POC01.domain.enums.PjOrPf;
 import io.github.CarolinaCedro.POC01.infra.repository.AddressRepository;
 import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -27,7 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -129,7 +127,7 @@ class CustomerServiceImplTest {
 
     @Test
     void whenFindCustomerByEmail() {
-        Mockito.when((repository.findByEmail(anyString()))).thenReturn(List.of(customer));
+        Mockito.when((repository.findByEmailIsLikeIgnoreCase(anyString()))).thenReturn(List.of(customer));
         List<CustomerSaveResponse> response = service.findCustomerByEmail(EMAIL);
         assertNotNull(response);
     }
@@ -185,6 +183,7 @@ class CustomerServiceImplTest {
         assertEquals(PjOrPf.PJ.toString(), response.getPjOrPf());
 
     }
+
 
     @Test
     void whenUpdateThenReturnSucess() {

@@ -5,8 +5,9 @@ import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateReque
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
-import io.github.CarolinaCedro.POC01.application.service.CustomerServiceImpl;
+import io.github.CarolinaCedro.POC01.application.service.impl.CustomerServiceImpl;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
+import io.github.CarolinaCedro.POC01.domain.entities.Customer;
 import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/customer")
 @CrossOrigin("http://localhost:4200")
 @RequiredArgsConstructor
-@Builder
 public class CustomerController {
 
     private final CustomerServiceImpl customerServiceImpl;
@@ -49,10 +51,11 @@ public class CustomerController {
 
 
     @GetMapping("/filter")
-    public ResponseEntity<CustomerSaveResponse> getByEmail(@RequestParam(value = "email", required = false, defaultValue = "") String email) {
-        return ResponseEntity.ok().body(mapper.convert().map(customerServiceImpl.findCustomerByEmail(email), CustomerSaveResponse.class));
-
+    public ResponseEntity<List<CustomerSaveResponse>> getByEmail(@RequestParam("email") String email) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(customerServiceImpl.findCustomerByEmail(email));
     }
+
 
 
     @GetMapping("/address/principal/{id}")

@@ -1,5 +1,6 @@
 package io.github.CarolinaCedro.POC01.application.integration;
 
+import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
 import io.github.CarolinaCedro.POC01.application.util.address.AddressCreator;
 import io.github.CarolinaCedro.POC01.application.wrapper.PageableResponse;
@@ -19,7 +20,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -76,28 +76,9 @@ public class AddressControllerIT {
 
     @Test
     void whendCreateThenReturnCreated() {
-
-        Address animePostRequestBody = AddressCreator.createValidAddress();
-
-        ResponseEntity<Address> animeResponseEntity = testRestTemplate.postForEntity("/api/address", animePostRequestBody, Address.class);
-
-        Assertions.assertThat(animeResponseEntity).isNotNull();
-        Assertions.assertThat(animeResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        Assertions.assertThat(animeResponseEntity.getBody()).isNotNull();
-        Assertions.assertThat(animeResponseEntity.getBody().getId()).isNotNull();
-
-
-
-//        Address address = AddressCreator.createValidUpdatedAddress();
-//        Address savedAddress = repository.save(address);
-//        Assertions.assertThat(savedAddress).isNotNull();
-//        Assertions.assertThat(savedAddress.getId()).isNotNull();
-//        Assertions.assertThat(savedAddress.getLogradouro()).isNotNull();
-//        Assertions.assertThat(savedAddress.getNumber()).isNotNull();
-//        Assertions.assertThat(savedAddress.getLocalidade()).isNotNull();
-//        Assertions.assertThat(savedAddress.getUf()).isNotNull();
-//        Assertions.assertThat(savedAddress.getCep()).isNotNull();
-//        Assertions.assertThat(savedAddress.getIsPrincipalAddress()).isNotNull();
+        ResponseEntity<AddressSaveResponse> responsePostForEntity = testRestTemplate.postForEntity("/api/address",
+                new AddressSaveRequest("Rua das flores","45b","Bairro martins","Santa Helena","75920000","GO",true), AddressSaveResponse.class);
+        Assertions.assertThat(responsePostForEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
 

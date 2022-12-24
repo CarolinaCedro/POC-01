@@ -29,7 +29,6 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @GroupSequenceProvider(CustomerGroupSequenceProvider.class)
-@Builder
 public class Customer {
 
     @Id

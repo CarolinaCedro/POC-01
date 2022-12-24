@@ -1,9 +1,13 @@
 package io.github.CarolinaCedro.POC01.application.integration;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.request.CustomerUpdateRequest;
+import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
+import io.github.CarolinaCedro.POC01.application.dto.response.CustomerMainAddressResponse;
 import io.github.CarolinaCedro.POC01.application.dto.response.CustomerSaveResponse;
 import io.github.CarolinaCedro.POC01.application.util.address.AddressCreator;
+import io.github.CarolinaCedro.POC01.application.util.address.CustomerCreator;
 import io.github.CarolinaCedro.POC01.application.wrapper.PageableResponse;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
 import io.github.CarolinaCedro.POC01.domain.entities.Customer;
@@ -13,6 +17,7 @@ import io.github.CarolinaCedro.POC01.infra.repository.CustomerRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +26,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.util.*;
+
+import static net.bytebuddy.matcher.ElementMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -37,7 +47,7 @@ import java.util.Objects;
 public class CustomerControllerIT {
 
 
-    public static final String EMAIL = "carol@email.com";
+    public static final String EMAIL = "test@example.com";
     public static final String PHONE = "064993456789";
     public static final String CPF_OR_CNPJ = "706.008.490-82";
     public static final String PJ_OR_PF = "PF";
@@ -49,6 +59,8 @@ public class CustomerControllerIT {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
+
+    private RestTemplate patchRestTemplate;
 
     @LocalServerPort
     private int port;
@@ -65,6 +77,7 @@ public class CustomerControllerIT {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        this.patchRestTemplate = testRestTemplate.getRestTemplate();
         startAddressInstance();
     }
 
@@ -77,8 +90,8 @@ public class CustomerControllerIT {
 
         Long expectedId = savedCustomer.getId();
 
-        PageableResponse<Customer> CustomersPage = testRestTemplate.exchange("/api/customer", HttpMethod.GET, null,
-                new ParameterizedTypeReference<PageableResponse<Customer>>() {
+        PageableResponse<CustomerSaveResponse> CustomersPage = testRestTemplate.exchange("/api/customer", HttpMethod.GET, null,
+                new ParameterizedTypeReference<PageableResponse<CustomerSaveResponse>>() {
                 }).getBody();
 
         Assertions.assertThat(CustomersPage).isNotNull();
@@ -106,10 +119,75 @@ public class CustomerControllerIT {
         Assertions.assertThat(savedCustomerResponse.getId()).isNotNull().isEqualTo(expectedId);
     }
 
+    @Test
+    void findById_ReturnsCustomer_WhenSuccessfulV2() {
+
+
+        Customer savedCustomer = repository.save(customer);
+
+        Long expectedId = savedCustomer.getId();
+
+        CustomerMainAddressResponse savedCustomerResponseMain = testRestTemplate.getForObject("/api/customer/v2/customer/{id}", CustomerMainAddressResponse.class, expectedId);
+
+        Assertions.assertThat(savedCustomerResponseMain).isNotNull();
+
+        Assertions.assertThat(savedCustomerResponseMain.getId()).isNotNull().isEqualTo(expectedId);
+    }
+
+    @Test
+    void whenFindByEmailThenReturnSucessController() {
+
+        Address savedAddress = addressRepository.save(AddressCreator.createAddressToBeSaved());
+        Customer customerSaved = repository.save(new Customer(EMAIL,List.of(savedAddress),PHONE,CPF_OR_CNPJ,PJ_OR_PF,savedAddress));
+
+
+        String expectedEmail = customerSaved.getEmail();
+
+        String url = String.format("/api/customer/filter?email=%s", expectedEmail);
+
+        List<CustomerSaveResponse> customer = testRestTemplate.exchange(url, HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<CustomerSaveResponse>>() {
+                }).getBody();
+
+        Assertions.assertThat(customer)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1);
+
+        Assertions.assertThat(customer.get(0).getEmail()).isEqualTo(expectedEmail);
+
+    }
+
+    @Test
+    void findByEmail_ReturnsEmptyListOfCustomer_WhenEmailIsNotFound(){
+        List<CustomerSaveResponse> animes = testRestTemplate.exchange("/api/customer/filter?email=dbz", HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<CustomerSaveResponse>>() {
+                }).getBody();
+
+        Assertions.assertThat(animes)
+                .isNotNull()
+                .isEmpty();
+    }
+
+    @Test
+    void findById_getPrincipalAddress() {
+
+        Address savedAddress = addressRepository.save(AddressCreator.createAddressToBeSaved());
+        Customer customerSaved = repository.save(new Customer(EMAIL,List.of(savedAddress),PHONE,CPF_OR_CNPJ,PJ_OR_PF,savedAddress));
+
+        Long expectedId = customerSaved.getAddressPrincipal().getId();
+
+        AddressSaveResponse customerMainAddress = testRestTemplate.getForObject("/api/customer/address/principal/{id}", AddressSaveResponse.class, expectedId);
+
+        Assertions.assertThat(customerMainAddress).isNotNull();
+
+        Assertions.assertThat(customerMainAddress.getId()).isNotNull().isEqualTo(expectedId);
+    }
+
 
 
     @Test
-    void whendCreateThenReturnCreated() {
+    void whenCreateThenReturnCreated() {
 
         Address addresSaved = addressRepository.save(new Address("Rua das flores","345","Bairro da paz","Santa Helena","75920000","GO",true));
         List<Address> addressList = new ArrayList<>();
@@ -119,26 +197,24 @@ public class CustomerControllerIT {
                 new CustomerUpdateRequest(ID,EMAIL,List.of(1L),PHONE,CPF_OR_CNPJ,PJ_OR_PF), CustomerSaveResponse.class);
         Assertions.assertThat(responsePostForEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-//        Customer responsePostForObject = testRestTemplate.postForObject("/api/customer",
-//                new Customer(ID,EMAIL,address,List.of(address),PHONE,CPF_OR_CNPJ, PjOrPf.PF), Customer.class);
-//        Assertions.assertThat(responsePostForObject.getPhone()).isEqualTo("064993456789");
-
     }
 
-//    @Test
-//    void whenUpdateThenReturnUpdateSucess() {
-//
-//        Customer savedCustomers = repository.save(updateRequest);
-//
-//        savedCustomers.setPhone("998456574");
-//        Long expectedId = savedCustomers.getId();
-//
-//        ResponseEntity<CustomerSaveResponse> customerResponseEntity = testRestTemplate.exchange("/api/customer/{id}",
-//                HttpMethod.PUT, new HttpEntity<>(savedCustomers), CustomerSaveResponse.class, expectedId);
-//
-//        Assertions.assertThat(customerResponseEntity).isNotNull();
-//        Assertions.assertThat(customerResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-//    }
+
+    @Test
+    void whenUpdateThenReturnUpdateSucess() {
+        Address savedAddress = addressRepository.save(AddressCreator.createAddressToBeSaved());
+        Customer customerSaved = repository.save(new Customer(EMAIL,List.of(savedAddress),PHONE,CPF_OR_CNPJ,PJ_OR_PF,savedAddress));
+        CustomerUpdateRequest updateRequest = new CustomerUpdateRequest(ID,EMAIL,List.of(1L),PHONE,CPF_OR_CNPJ,PJ_OR_PF);
+
+        updateRequest.setPhone("64883907889");
+        Long expectedId = savedAddress.getId();
+
+        ResponseEntity<CustomerSaveResponse> customerResponseEntity = testRestTemplate.exchange("/api/customer/{id}",
+                HttpMethod.PUT, new HttpEntity<>(updateRequest), CustomerSaveResponse.class, expectedId);
+
+        Assertions.assertThat(customerResponseEntity).isNotNull();
+        Assertions.assertThat(customerResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
 
     @Test

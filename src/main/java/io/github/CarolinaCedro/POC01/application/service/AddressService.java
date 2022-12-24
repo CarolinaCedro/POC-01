@@ -1,4 +1,4 @@
-package io.github.CarolinaCedro.POC01.application.service.impl;
+package io.github.CarolinaCedro.POC01.application.service;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;

@@ -2,14 +2,10 @@ package io.github.CarolinaCedro.POC01.application.controller;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
-import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
-import io.github.CarolinaCedro.POC01.application.service.AddressServiceImpl;
-import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;
+import io.github.CarolinaCedro.POC01.application.service.impl.AddressServiceImpl;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
-import jakarta.validation.Valid;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
