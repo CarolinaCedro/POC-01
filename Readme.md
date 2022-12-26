@@ -27,7 +27,7 @@ O modelo de dados dessa API inclui dois tipos de recursos: clientes e endereços
 
 API Poc possui um relacionamento de entidade entre os recursos de clientes (customers) e endereços (addresses). Segundo as regras de negócio, cada cliente pode ter no máximo 5 endereços cadastrados e deve sempre possuir um endereço principal. É possível realizar operações de CRUD (criar, ler, atualizar e excluir) tanto para clientes quanto para endereços, além de tornar um endereço comum em um endereço principal.
 
-Para garantir a qualidade dos dados, foi incluído validações e máscaras em alguns campos, como o CEP e o número de telefone. Além disso, utilizamos o padrão REST e o framework Spring Boot para desenvolver a API de forma eficiente e seguindo os princípios SOLID.
+Para garantir a qualidade dos dados, foi incluído validações e máscaras em alguns campos, como o CEP e o CPF/CNPJ e validação em todos os demais campos. Além disso, foi utilizado o padrão REST e o framework Spring Boot para desenvolver a API de forma eficiente e seguindo os princípios SOLID.
 
 Para facilitar o uso da API, também foi incluído paginação e filtros nas consultas através do método GET. Também foi versionado o código da aplicação no GitHub e foi realizado testes de integração e unitários para garantir a qualidade do código. Por fim, foi utilizado um banco de dados em memória para armazenar os dados.
 
