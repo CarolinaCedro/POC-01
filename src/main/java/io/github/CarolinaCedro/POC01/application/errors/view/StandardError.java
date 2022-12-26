@@ -1,4 +1,4 @@
-package io.github.CarolinaCedro.POC01.application.exception;
+package io.github.CarolinaCedro.POC01.application.errors.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

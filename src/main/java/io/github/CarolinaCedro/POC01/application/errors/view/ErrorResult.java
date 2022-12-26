@@ -1,4 +1,4 @@
-package io.github.CarolinaCedro.POC01.config.errors.view;
+package io.github.CarolinaCedro.POC01.application.errors.view;
 
 public class ErrorResult extends ApiResult {
 

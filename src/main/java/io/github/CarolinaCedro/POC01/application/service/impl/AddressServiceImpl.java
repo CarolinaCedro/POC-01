@@ -3,7 +3,7 @@ package io.github.CarolinaCedro.POC01.application.service.impl;
 import com.google.gson.Gson;
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
-import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
+import io.github.CarolinaCedro.POC01.application.errors.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.AddressService;
 import io.github.CarolinaCedro.POC01.config.app.AppConstants;
 import io.github.CarolinaCedro.POC01.config.modelMapper.ModelMapperConfig;

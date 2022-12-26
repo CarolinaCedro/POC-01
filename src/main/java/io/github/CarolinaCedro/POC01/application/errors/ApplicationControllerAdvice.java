@@ -1,10 +1,10 @@
-package io.github.CarolinaCedro.POC01.config.errors;
+package io.github.CarolinaCedro.POC01.application.errors;
 
 
-import io.github.CarolinaCedro.POC01.application.exception.ApiErrors;
-import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
-import io.github.CarolinaCedro.POC01.application.exception.StandardError;
-import io.github.CarolinaCedro.POC01.config.errors.view.ApiResult;
+import io.github.CarolinaCedro.POC01.application.errors.exception.*;
+import io.github.CarolinaCedro.POC01.application.errors.view.ApiErrors;
+import io.github.CarolinaCedro.POC01.application.errors.view.ApiResult;
+import io.github.CarolinaCedro.POC01.application.errors.view.StandardError;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 

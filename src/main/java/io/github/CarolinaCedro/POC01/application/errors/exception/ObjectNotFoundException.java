@@ -1,4 +1,4 @@
-package io.github.CarolinaCedro.POC01.application.exception;
+package io.github.CarolinaCedro.POC01.application.errors.exception;
 
 
 public class ObjectNotFoundException extends RuntimeException{

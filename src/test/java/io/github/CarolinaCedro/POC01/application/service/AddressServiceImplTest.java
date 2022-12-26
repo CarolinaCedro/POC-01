@@ -2,7 +2,7 @@ package io.github.CarolinaCedro.POC01.application.service;
 
 import io.github.CarolinaCedro.POC01.application.dto.request.AddressSaveRequest;
 import io.github.CarolinaCedro.POC01.application.dto.response.AddressSaveResponse;
-import io.github.CarolinaCedro.POC01.application.exception.ObjectNotFoundException;
+import io.github.CarolinaCedro.POC01.application.errors.exception.ObjectNotFoundException;
 import io.github.CarolinaCedro.POC01.application.service.impl.AddressServiceImpl;
 import io.github.CarolinaCedro.POC01.config.app.AppConstants;
 import io.github.CarolinaCedro.POC01.domain.entities.Address;
